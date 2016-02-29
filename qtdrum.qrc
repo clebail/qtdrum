@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/qtdrum">
+        <file>resources/images/playpause.png</file>
+    </qresource>
+</RCC>
