@@ -17,7 +17,7 @@
 #define TIMER_HEIGHT            (TEMPS_HEIGHT-TEMPS_TIMER_DIFF_HEIGHT*2)
 
 CDrumWidget::CDrumWidget(QWidget *parent) : QWidget(parent) {
-
+    curTemps = 0;
 }
 
 void CDrumWidget::addPad(SPad *pad) {
@@ -112,7 +112,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
         header=QRect(x + TEMPS_TIMER_DIFF_WIDTH, y, TIMER_WIDTH, TIMER_HEIGHT);
 
         painter.setPen(pen);
-        painter.setBrush(Qt::white);
+        painter.setBrush(curTemps == j+1 ? j % 4 == 0 ? QColor(0x93, 0x65, 0xb8) : QColor(0x1f, 0xb5, 0xac) : Qt::white);
         painter.drawEllipse(header);
     }
 
@@ -134,4 +134,12 @@ void CDrumWidget::mouseReleaseEvent(QMouseEvent *event) {
 
         repaint();
     }
+}
+
+int CDrumWidget::getNbTemps(void) {
+    return NB_TEMPS;
+}
+
+void CDrumWidget::setCurTemps(int curTemps) {
+    this->curTemps = curTemps;
 }
