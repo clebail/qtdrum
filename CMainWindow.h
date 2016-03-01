@@ -14,13 +14,15 @@ public:
 private slots:
     void on_pbPlayPause_clicked(bool);
     void on_cbMidiPort_currentIndexChanged(int);
+    void onStartTimer(void);
     void onTimer(void);
 private:
     RtMidiOut *midiout;
     bool playing;
-    QTimer *timer;
+    QTimer *timer, *startTimer;
     int curTemps;
     QList<SPad> pads;
+    int startTimerValue;
 
     QStringList getMidiOutputPort(void);
     void initDrumKit(void);

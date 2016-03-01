@@ -58,6 +58,9 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
 
+    startTimer = new QTimer(this);
+    connect(startTimer, SIGNAL(timeout()), this, SLOT(onStartTimer()));
+
     initDrumKit();
 }
 
@@ -80,8 +83,9 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
     playing = !playing;
 
     if(playing) {
-        timer->setInterval(60000 / spTempo->value() / 4);
-        timer->start();
+        startTimerValue = 0;
+        startTimer->setInterval(60000 / spTempo->value() / 4);
+        startTimer->start();
     }else {
         timer->stop();
     }
@@ -89,6 +93,21 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
 
 void CMainWindow::on_cbMidiPort_currentIndexChanged(int) {
     initDrumKit();
+}
+
+void CMainWindow::onStartTimer(void) {
+    if(startTimerValue % 4 == 0) {
+        playNote(42);
+    } else {
+        if(startTimerValue == 15) {
+            timer->setInterval(60000 / spTempo->value() / 4);
+            timer->start();
+
+            startTimer->stop();
+        }
+    }
+
+    startTimerValue++;
 }
 
 void CMainWindow::onTimer(void) {
