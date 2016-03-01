@@ -4,9 +4,10 @@
 #include <QWidget>
 
 typedef struct _SPad {
-    _SPad(QString nom, unsigned char note) { this->nom = nom; this->note = note; }
+    _SPad(QString nom, unsigned char note, char* map) { this->nom = nom; this->note = note; this->map = map; }
     QString nom;
     unsigned char note;
+    char *map;
 }SPad;
 
 class CDrumWidget : public QWidget {

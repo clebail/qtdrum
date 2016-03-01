@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/qtdrum">
         <file>resources/images/playpause.png</file>
+        <file>resources/fonts/DS-DIGI.TTF</file>
     </qresource>
 </RCC>

@@ -23,7 +23,7 @@ CDrumWidget::CDrumWidget(QWidget *parent) : QWidget(parent) {
 void CDrumWidget::addPad(SPad *pad) {
     char *row = new char[NB_TEMPS];
 
-    memset(row, 0, NB_TEMPS);
+    strcpy(row, pad->map);
 
     pads.append(*pad);;
     matrice.append(row);
@@ -98,12 +98,12 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
 
             header=QRect(x + TEMPS_CASE_DIFF_WIDTH, y + TEMPS_CASE_DIFF_HEIGHT, CASE_WIDTH, CASE_HEIGHT);
             painter.setPen(border);
-            painter.setBrush(cRow[j] ? QColor(0x2c, 0x89, 0xc9) : Qt::white);
+            painter.setBrush(cRow[j] == '1' ? QColor(0x2c, 0x89, 0xc9) : Qt::white);
             painter.drawRect(header);
         }
     }
 
-    QPen pen(border);
+    /*QPen pen(border);
     pen.setWidth(2);
     y = pads.length() * TEMPS_HEIGHT + TEMPS_HEIGHT + 1 + TEMPS_TIMER_DIFF_HEIGHT;
     for(int j=0;j<NB_TEMPS;j++) {
@@ -114,7 +114,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
         painter.setPen(pen);
         painter.setBrush(curTemps == j+1 ? j % 4 == 0 ? QColor(0x93, 0x65, 0xb8) : QColor(0x1f, 0xb5, 0xac) : Qt::white);
         painter.drawEllipse(header);
-    }
+    }*/
 
 }
 
@@ -130,7 +130,7 @@ void CDrumWidget::mouseReleaseEvent(QMouseEvent *event) {
         row = (y - TEMPS_HEIGHT) / TEMPS_HEIGHT;
 
         cRow = matrice.at(row);
-        cRow[col] = 1 - cRow[col];
+        cRow[col] = '1'+ '0' - cRow[col];
 
         repaint();
     }

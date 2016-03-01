@@ -1,5 +1,5 @@
-#include <QObject>
 #include <QtDebug>
+#include <QFontDatabase>
 #include "CMainWindow.h"
 
 static QList<SPad> emptyList(void) {
@@ -9,29 +9,38 @@ static QList<SPad> emptyList(void) {
 
 CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     QStringList midiPort;
-    pads = emptyList()  << SPad(QString::fromUtf8("Bass Drum 2"), 35)
-                        << SPad(QString::fromUtf8("Bass Drum 1"), 36)
-                        << SPad(QString::fromUtf8("Side Stick/Rimshot"), 37)
-                        << SPad(QString::fromUtf8("Snare Drum 1"), 38)
-                        << SPad(QString::fromUtf8("Hand Clap"), 39)
-                        << SPad(QString::fromUtf8("Snare Drum 2"), 40)
-                        << SPad(QString::fromUtf8("Low Tom 2"), 41)
-                        << SPad(QString::fromUtf8("Closed Hi-hat"), 42)
-                        << SPad(QString::fromUtf8("Low Tom 1"), 43)
-                        << SPad(QString::fromUtf8("Pedal Hi-hat"), 44)
-                        << SPad(QString::fromUtf8("Mid Tom 2"), 45)
-                        << SPad(QString::fromUtf8("Open Hi-hat"), 46)
-                        << SPad(QString::fromUtf8("Mid Tom 1"), 47)
-                        << SPad(QString::fromUtf8("High Tom 2"), 48)
-                        << SPad(QString::fromUtf8("Crash Cymbal 1"), 49)
-                        << SPad(QString::fromUtf8("High Tom 1"), 50)
-                        << SPad(QString::fromUtf8("Ride Cymbal 1"), 51)
-                        << SPad(QString::fromUtf8("Splash Cymbal"), 55)
-                        << SPad(QString::fromUtf8("Crash Cymbal 2"), 57)
-                        << SPad(QString::fromUtf8("Ride Cymbal 2"), 59)
+    pads = emptyList()  << SPad(QString::fromUtf8("Bass Drum 2"), 35, (char *)"1000000010000000")
+                        << SPad(QString::fromUtf8("Bass Drum 1"), 36, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Side Stick/Rimshot"), 37, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Snare Drum 1"), 38, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Hand Clap"), 39, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Snare Drum 2"), 40, (char *)"0000100000001000")
+                        << SPad(QString::fromUtf8("Low Tom 2"), 41, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Closed Hi-hat"), 42, (char *)"1010101010101000")
+                        << SPad(QString::fromUtf8("Low Tom 1"), 43, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Pedal Hi-hat"), 44, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Mid Tom 2"), 45, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Open Hi-hat"), 46, (char *)"0000000000000010")
+                        << SPad(QString::fromUtf8("Mid Tom 1"), 47, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("High Tom 2"), 48, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Crash Cymbal 1"), 49, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("High Tom 1"), 50, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Ride Cymbal 1"), 51, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Splash Cymbal"), 55, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Crash Cymbal 2"), 57, (char *)"0000000000000000")
+                        << SPad(QString::fromUtf8("Ride Cymbal 2"), 59, (char *)"0000000000000000")
                         ;
-
     setupUi(this);
+
+    int id = QFontDatabase::addApplicationFont(":/qtdrum/resources/fonts/DS-DIGI.TTF");
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+    QFont font(family);
+
+    font.setPixelSize(30);
+    font.setItalic(true);
+    font.setBold(true);
+
+    lbTimer->setFont(font);
 
     midiout = new RtMidiOut();
 
@@ -72,13 +81,9 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
 
     if(playing) {
         timer->setInterval(60000 / spTempo->value() / 4);
-        curTemps = 1;
         timer->start();
     }else {
         timer->stop();
-
-        drumWidget->setCurTemps(0);
-        drumWidget->repaint();
     }
 }
 
@@ -89,14 +94,13 @@ void CMainWindow::on_cbMidiPort_currentIndexChanged(int) {
 void CMainWindow::onTimer(void) {
     QList<char *> matrices = drumWidget->getMatrices();
 
-    drumWidget->setCurTemps(curTemps);
-    drumWidget->repaint();
+    lbTimer->setText(QString::number(((curTemps - 1) / 4) + 1));
 
     for(int i=0;i<matrices.length();i++) {
         int tps = curTemps - 1;
         char *map = matrices.at(i);
 
-        if(map[tps]) {
+        if(map[tps] == '1') {
             playNote(pads.at(i).note);
         }
 
