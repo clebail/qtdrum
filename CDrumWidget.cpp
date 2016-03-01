@@ -109,14 +109,14 @@ void CDrumWidget::mouseReleaseEvent(QMouseEvent *event) {
     if(x > titleWidth && y > TEMPS_HEIGHT && y < pads.length() * TEMPS_HEIGHT + TEMPS_HEIGHT + 1 + TEMPS_TIMER_DIFF_HEIGHT) {
         int col, row;
         QByteArray ba;
-        char newVal;
 
         col = (x - titleWidth) / TEMPS_WIDTH;
         row = (y - TEMPS_HEIGHT) / TEMPS_HEIGHT;
 
-        ba = matrice.at(row);
-        newVal = '1' + '0' - ba.at(col);
-        ba.replace(col, 1, &newVal);
+        ba = matrice[row];
+        ba[col] = '1' + '0' - ba[col];
+
+        matrice[row] = ba;
 
         repaint();
     }
