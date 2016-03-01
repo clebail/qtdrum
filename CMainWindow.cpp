@@ -120,8 +120,12 @@ void CMainWindow::initDrumKit(void) {
     }
     midiout->openPort(cbMidiPort->currentIndex());
 
-    message.push_back(176);
-    message.push_back(7);
+    message.push_back(192);
+    message.push_back(5);
+    midiout->sendMessage(&message);
+
+    message[0] = 176;
+	message[1] = 7;
     message.push_back(127);
     midiout->sendMessage(&message);
 }
