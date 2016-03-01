@@ -37,7 +37,6 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     QFont font(family);
 
     font.setPixelSize(30);
-    font.setItalic(true);
     font.setBold(true);
 
     lbTimer->setFont(font);
@@ -158,7 +157,7 @@ void CMainWindow::playNote(char note) {
 
     message.push_back(153);
     message.push_back(note);
-    message.push_back(64);
+    message.push_back(127);
     midiout->sendMessage(&message);
 }
 
