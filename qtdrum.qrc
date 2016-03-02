@@ -2,5 +2,6 @@
     <qresource prefix="/qtdrum">
         <file>resources/images/playpause.png</file>
         <file>resources/fonts/DS-DIGI.TTF</file>
+        <file>resources/images/drum-icon.svg</file>
     </qresource>
 </RCC>

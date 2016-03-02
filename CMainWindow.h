@@ -16,18 +16,35 @@ private slots:
     void on_cbMidiPort_currentIndexChanged(int);
     void onStartTimer(void);
     void onTimer(void);
+    void onRealTimeTimer(void);
+    void on_actNewFile_triggered(bool);
+    void on_actOpenFile_triggered(bool);
+    void on_actSave_triggered(bool);
+    void on_actSaveAs_triggered(bool);
+    void on_actQuit_triggered(bool);
+    void on_drumWidget_edit(const SPad&, const QByteArray&, int);
+    void on_spTempo_valueChanged(int);
+protected:
+    virtual void closeEvent(QCloseEvent *event);
 private:
     RtMidiOut *midiout;
     bool playing;
-    QTimer *timer, *startTimer;
-    int curTemps;
+    QTimer *timer, *startTimer, *realTimeTimer;
+    int curTemps, realTime;
     QList<SPad> pads;
     int startTimerValue;
+    bool isOpenFileUnsaved;
+    QString openFileName;
+    QString fullOpenFileName;
 
     QStringList getMidiOutputPort(void);
     void initDrumKit(void);
     void playNote(char note);
     void stopNote(char note);
+    void setOpenFileName(QString openFileName, QString fullOpenFileName);
+    QString createFileContent(void);
+    bool loadFile(QString fileContent);
+    bool saveFile(QString fileName);
 };
 
 #endif // CMAINWINDOW_H

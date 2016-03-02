@@ -19,17 +19,19 @@
 CDrumWidget::CDrumWidget(QWidget *parent) : QWidget(parent) {
 }
 
-void CDrumWidget::addPad(SPad *pad) {
+void CDrumWidget::addPad(SPad *pad, bool doRepaint) {
     pads.append(*pad);;
     matrice.append(QByteArray(pad->map));
 
-    repaint();
+    if(doRepaint) {
+        repaint();
+    }
 }
 
 void CDrumWidget::addPads(QList<SPad> *pads2Add){
     for(int i=0;i<pads2Add->length();i++) {
         SPad pad = pads2Add->at(i);
-        addPad(&pad);
+        addPad(&pad, false);
     }
 
     repaint();
@@ -119,9 +121,29 @@ void CDrumWidget::mouseReleaseEvent(QMouseEvent *event) {
         matrice[row] = ba;
 
         repaint();
+
+        emit(edit(pads[row], ba, col));
     }
 }
 
 int CDrumWidget::getNbTemps(void) {
     return NB_TEMPS;
+}
+
+void CDrumWidget::clear(void) {
+    for(int i=0;i<matrice.size();i++) {
+        matrice[i] = QByteArray(NB_TEMPS, '0');
+    }
+
+    repaint();
+}
+
+void CDrumWidget::setMatriceRow(int note, const QByteArray& map) {
+    for(int i=0;i<pads.size();i++) {
+        if(pads[i].note == note) {
+            matrice[i] = QByteArray(map);
+
+            return;
+        }
+    }
 }
