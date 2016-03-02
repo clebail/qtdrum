@@ -5,6 +5,9 @@
 #include <QFileDialog>
 #include "CMainWindow.h"
 
+#define ONE_MINUTE              ((int)60000)
+#define ONE_SECOND              ((int)1000)
+
 static QList<SPad> emptyList(void) {
     QList<SPad> list;
     return list;
@@ -35,15 +38,18 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
                         ;
     setupUi(this);
 
-    int id = QFontDatabase::addApplicationFont(":/qtdrum/resources/fonts/DS-DIGI.TTF");
-    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
-    QFont font(family);
+    QFont afficheurfont = getFont(":/qtdrum/resources/fonts/DS-DIGI.TTF");
 
-    font.setPixelSize(30);
-    font.setBold(true);
+    afficheurfont.setPixelSize(30);
+    afficheurfont.setBold(true);
 
-    lbTimer->setFont(font);
-    lbRealTime->setFont(font);
+    lbTimer->setFont(afficheurfont);
+    lbRealTime->setFont(afficheurfont);
+
+    spNbBeat->setMinimum(MIN_BEAT);
+    spNbBeat->setMaximum(MAX_BEAT);
+    spNbDiv->setMinimum(MIN_DIV);
+    spNbDiv->setMaximum(MAX_DIV);
 
     midiout = new RtMidiOut();
 
@@ -66,7 +72,7 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     connect(startTimer, SIGNAL(timeout()), this, SLOT(onStartTimer()));
 
     realTimeTimer = new QTimer(this);
-    realTimeTimer->setInterval(1000);
+    realTimeTimer->setInterval(ONE_SECOND);
     connect(realTimeTimer, SIGNAL(timeout()), this, SLOT(onRealTimeTimer()));
 
     isOpenFileUnsaved = false;
@@ -97,8 +103,14 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
         curTemps = 1;
         startTimerValue = 0;
         realTime = 0;
-        startTimer->setInterval(60000 / spTempo->value() / 4);
+        nbBeat = spNbBeat->value();
+        nbDiv = spNbDiv->value();
+        nbTemps = nbBeat * nbDiv;
+
+        startTimer->setInterval(ONE_MINUTE / spTempo->value() / nbDiv);
         startTimer->start();
+
+        pbPlayPause->setIcon(QIcon(":/qtdrum/resources/images/stop.png"));
     }else {
         startTimer->stop();
         timer->stop();
@@ -106,6 +118,8 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
 
         lbTimer->setText("0");
         lbRealTime->setText("00:00");
+
+        pbPlayPause->setIcon(QIcon(":/qtdrum/resources/images/play.png"));
     }
 }
 
@@ -114,8 +128,8 @@ void CMainWindow::on_cbMidiPort_currentIndexChanged(int) {
 }
 
 void CMainWindow::onStartTimer(void) {
-    if(startTimerValue % 4 == 0) {
-        if(startTimerValue == 16) {
+    if(startTimerValue % nbDiv == 0) {
+        if(startTimerValue == nbTemps) {
             realTimeTimer->start();
             startTimer->stop();
 
@@ -123,8 +137,8 @@ void CMainWindow::onStartTimer(void) {
         }
         playNote(42);
     } else {
-        if(startTimerValue == 15) {
-            timer->setInterval(60000 / spTempo->value() / 4);
+        if(startTimerValue == nbTemps-1) {
+            timer->setInterval(ONE_MINUTE / spTempo->value() / nbDiv);
             timer->start();
         }
     }
@@ -135,7 +149,7 @@ void CMainWindow::onStartTimer(void) {
 void CMainWindow::onTimer(void) {
     QList<QByteArray> matrices = drumWidget->getMatrices();
 
-    lbTimer->setText(QString::number(((curTemps - 1) / 4) + 1));
+    lbTimer->setText(QString::number(((curTemps - 1) / nbDiv) + 1));
 
     for(int i=0;i<matrices.length();i++) {
         int tps = curTemps - 1;
@@ -238,6 +252,16 @@ void CMainWindow::on_spTempo_valueChanged(int) {
     isOpenFileUnsaved = true;
 }
 
+void CMainWindow::on_spNbBeat_valueChanged(int value) {
+    drumWidget->setNbBeat(value);
+    isOpenFileUnsaved = true;
+}
+
+void CMainWindow::on_spNbDiv_valueChanged(int value) {
+    drumWidget->setNbDivPerBeat(value);
+    isOpenFileUnsaved = true;
+}
+
 void CMainWindow::closeEvent(QCloseEvent *event) {
     if(!isOpenFileUnsaved || QMessageBox::question(this, tr("Confirmation"), tr("Current file not save, quit ?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
         event->accept();
@@ -293,7 +317,7 @@ QString CMainWindow::createFileContent(void) {
     QString fileContent = "";
     QList<QByteArray> matrice = drumWidget->getMatrices();
 
-    fileContent += "Tempo: "+QString::number(spTempo->value())+"\n";
+    fileContent += "Params: "+QString::number(spTempo->value())+","+QString::number(spNbBeat->value())+","+QString::number(spNbDiv->value())+"\n";
     for(int i=0;i<pads.size();i++) {
         fileContent += QString::number(pads[i].note)+": "+QString(matrice[i])+"\n";
     }
@@ -302,13 +326,18 @@ QString CMainWindow::createFileContent(void) {
 }
 
 bool CMainWindow::loadFile(QString fileContent) {
-    int tempo;
+    int tempo, nbBeat, nbDiv;
 
-    if(fileContent.indexOf("Tempo: ") == 0) {
-        int i;
+    if(fileContent.indexOf("Params: ") == 0) {
+        int paramsSize = QString("Params: ").size();
+        int i = fileContent.indexOf("\n") +1;
         QList<SPad> newPads;
 
-        tempo = fileContent.mid(7, i = fileContent.indexOf("\n")-7).toInt();
+        QStringList params = fileContent.mid(paramsSize, i - paramsSize - 1).split(",");
+
+        tempo = params[0].toInt();
+        nbBeat = params[1].toInt();
+        nbDiv = params[2].toInt();
 
         while(i<fileContent.size()) {
             int posCR = fileContent.indexOf("\n", i);
@@ -326,6 +355,11 @@ bool CMainWindow::loadFile(QString fileContent) {
 
         drumWidget->clear();
         spTempo->setValue(tempo);
+        spNbBeat->setValue(nbBeat);
+        spNbDiv->setValue(nbDiv);
+
+        drumWidget->setNbBeat(nbBeat);
+        drumWidget->setNbDivPerBeat(nbDiv);
 
         for(i=0;i<newPads.size();i++) {
             drumWidget->setMatriceRow(newPads[i].note, newPads[i].map);
@@ -355,4 +389,11 @@ bool CMainWindow::saveFile(QString fileName) {
     QMessageBox::critical(this, tr("Error"), tr("Unable to save file"));
 
     return false;
+}
+
+QFont CMainWindow::getFont(QString resourceName) {
+    int id = QFontDatabase::addApplicationFont(resourceName);
+    QString family = QFontDatabase::applicationFontFamilies(id).at(0);
+
+    return QFont(family);
 }

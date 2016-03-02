@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>663</width>
     <height>583</height>
    </rect>
   </property>
@@ -44,16 +44,16 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
-        <number>0</number>
+        <number>2</number>
        </property>
        <property name="leftMargin">
-        <number>0</number>
+        <number>2</number>
        </property>
        <property name="topMargin">
         <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>0</number>
+        <number>2</number>
        </property>
        <property name="bottomMargin">
         <number>0</number>
@@ -102,6 +102,81 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="lbMeasure">
+         <property name="text">
+          <string>Measure :</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spNbBeat">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Number of beat</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>16</number>
+         </property>
+         <property name="value">
+          <number>4</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spNbDiv">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Number of division in a beat</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>16</number>
+         </property>
+         <property name="value">
+          <number>4</number>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pbPlayPause">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -122,14 +197,17 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Play / pause</string>
+          <string>Play / stop</string>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton { text-align: center; }</string>
          </property>
          <property name="text">
           <string/>
          </property>
          <property name="icon">
           <iconset resource="qtdrum.qrc">
-           <normaloff>:/qtdrum/resources/images/playpause.png</normaloff>:/qtdrum/resources/images/playpause.png</iconset>
+           <normaloff>:/qtdrum/resources/images/play.png</normaloff>:/qtdrum/resources/images/play.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -164,6 +242,9 @@
            <pointsize>10</pointsize>
           </font>
          </property>
+         <property name="toolTip">
+          <string>Current beat</string>
+         </property>
          <property name="styleSheet">
           <string notr="true">QLabel { color : #9365b8; }</string>
          </property>
@@ -195,6 +276,9 @@
            <height>32</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Elapsed time</string>
+         </property>
          <property name="styleSheet">
           <string notr="true">QLabel { color: #1FB5AC; }</string>
          </property>
@@ -219,7 +303,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
+     <width>663</width>
      <height>30</height>
     </rect>
    </property>

@@ -4,19 +4,17 @@
 #include <QtDebug>
 #include "CDrumWidget.h"
 
-#define NB_TEMPS                ((int)16)
 #define TEMPS_WIDTH             ((int)24)
 #define TEMPS_HEIGHT            ((int)24)
 #define TEMPS_CASE_DIFF_WIDTH   ((int)4)
 #define TEMPS_CASE_DIFF_HEIGHT  ((int)4)
 #define CASE_WIDTH              (TEMPS_WIDTH-TEMPS_CASE_DIFF_WIDTH*2)
 #define CASE_HEIGHT             (TEMPS_HEIGHT-TEMPS_CASE_DIFF_HEIGHT*2)
-#define TEMPS_TIMER_DIFF_WIDTH  ((int)6)
-#define TEMPS_TIMER_DIFF_HEIGHT ((int)6)
-#define TIMER_WIDTH             (TEMPS_WIDTH-TEMPS_TIMER_DIFF_WIDTH*2)
-#define TIMER_HEIGHT            (TEMPS_HEIGHT-TEMPS_TIMER_DIFF_HEIGHT*2)
 
 CDrumWidget::CDrumWidget(QWidget *parent) : QWidget(parent) {
+    nbBeat = 4;
+    nbDivPerBeat = 4;
+    nbTemps = nbBeat * nbDivPerBeat;
 }
 
 void CDrumWidget::addPad(SPad *pad, bool doRepaint) {
@@ -48,7 +46,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
     QColor backgroundTemps(0x62, 0x76, 0x7c);
     QColor background(0x6f, 0x89, 0x92);
     QPen pen(border);
-    int titleWidth = event->rect().width() - NB_TEMPS * TEMPS_WIDTH;
+    int titleWidth = event->rect().width() - nbTemps * TEMPS_WIDTH;
     int i, x ,y;
 
     painter.setRenderHint(QPainter::Antialiasing);
@@ -64,9 +62,9 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
     painter.setPen(Qt::white);
     painter.drawText(header, tr("Pad"), QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
 
-    for(i=0;i<NB_TEMPS;i++) {
+    for(i=0;i<nbTemps;i++) {
         x = i * TEMPS_WIDTH + titleWidth;
-        bool onTemps = i % 4 == 0;
+        bool onTemps = i % nbDivPerBeat == 0;
 
         header=QRect(x, 0, TEMPS_WIDTH, TEMPS_HEIGHT);
         painter.setPen(border);
@@ -74,7 +72,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
         painter.drawRect(header);
         painter.setPen(Qt::white);
         if(onTemps) {
-            painter.drawText(header, QString::number(i / 4 + 1), QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
+            painter.drawText(header, QString::number(i / nbDivPerBeat + 1), QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
         }
     }
 
@@ -91,10 +89,10 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
         painter.setPen(Qt::black);
         painter.drawText(header, pads.at(i).nom, QTextOption(Qt::AlignVCenter));
 
-        for(int j=0;j<NB_TEMPS;j++) {
+        for(int j=0;j<nbTemps;j++) {
             int x = j * TEMPS_WIDTH + titleWidth;
 
-            pen.setWidth(j % 4 == 0 ? 2 : 1);
+            pen.setWidth(j % nbDivPerBeat == 0 ? 2 : 1);
 
             header=QRect(x + TEMPS_CASE_DIFF_WIDTH, y + TEMPS_CASE_DIFF_HEIGHT, CASE_WIDTH, CASE_HEIGHT);
             painter.setPen(pen);
@@ -106,9 +104,9 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
 
 void CDrumWidget::mouseReleaseEvent(QMouseEvent *event) {
     int x = event->x(), y = event->y();
-    int titleWidth = rect().width() - NB_TEMPS * TEMPS_WIDTH;
+    int titleWidth = rect().width() - nbTemps * TEMPS_WIDTH;
 
-    if(x > titleWidth && y > TEMPS_HEIGHT && y < pads.length() * TEMPS_HEIGHT + TEMPS_HEIGHT + 1 + TEMPS_TIMER_DIFF_HEIGHT) {
+    if(x > titleWidth && y > TEMPS_HEIGHT && y < pads.length() * TEMPS_HEIGHT + TEMPS_HEIGHT + 1) {
         int col, row;
         QByteArray ba;
 
@@ -127,12 +125,12 @@ void CDrumWidget::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 int CDrumWidget::getNbTemps(void) {
-    return NB_TEMPS;
+    return nbTemps;
 }
 
 void CDrumWidget::clear(void) {
     for(int i=0;i<matrice.size();i++) {
-        matrice[i] = QByteArray(NB_TEMPS, '0');
+        matrice[i] = QByteArray(nbTemps, '0');
     }
 
     repaint();
@@ -142,8 +140,46 @@ void CDrumWidget::setMatriceRow(int note, const QByteArray& map) {
     for(int i=0;i<pads.size();i++) {
         if(pads[i].note == note) {
             matrice[i] = QByteArray(map);
+            resizeMatriceRow(i);
 
             return;
         }
+    }
+}
+
+void CDrumWidget::setNbBeat(int nbBeat) {
+    if(this->nbBeat != nbBeat && nbBeat >= MIN_BEAT && nbBeat <= MAX_BEAT) {
+        this->nbBeat = nbBeat;
+        nbTemps = nbBeat * nbDivPerBeat;
+
+        resizeMatrice();
+
+        repaint();
+    }
+}
+
+void CDrumWidget::setNbDivPerBeat(int nbDivPerBeat) {
+    if(this->nbDivPerBeat != nbDivPerBeat && nbDivPerBeat >= MIN_DIV && nbDivPerBeat <= MAX_DIV) {
+        this->nbDivPerBeat = nbDivPerBeat;
+        nbTemps = nbBeat * nbDivPerBeat;
+
+        resizeMatrice();
+
+        repaint();
+    }
+}
+
+void CDrumWidget::resizeMatrice(void) {
+    for(int i=0;i<matrice.size();i++) {
+        resizeMatriceRow(i);
+    }
+}
+
+void CDrumWidget::resizeMatriceRow(int row) {
+    int curSize = matrice[row].size();
+    if(curSize < nbTemps) {
+        matrice[row].append(QByteArray(nbTemps - curSize, '0'));
+    }else if(curSize > nbTemps) {
+        matrice[row].truncate(nbTemps);
     }
 }

@@ -4,6 +4,11 @@
 #include <QWidget>
 #include <QByteArray>
 
+#define MIN_BEAT                1
+#define MAX_BEAT                16
+#define MIN_DIV                 1
+#define MAX_DIV                 16
+
 typedef struct _SPad {
     _SPad(QString nom, unsigned char note, QByteArray map) { this->nom = nom; this->note = note; this->map = map; }
     QString nom;
@@ -21,12 +26,18 @@ public:
     int getNbTemps(void);
     void clear(void);
     void setMatriceRow(int note, const QByteArray& map);
+    void setNbBeat(int nbBeat);
+    void setNbDivPerBeat(int nbBeat);
 protected:
     virtual void paintEvent(QPaintEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent * event);
 private:
     QList<SPad> pads;
     QList<QByteArray> matrice;
+    int nbBeat, nbDivPerBeat, nbTemps;
+
+    void resizeMatrice(void);
+    void resizeMatriceRow(int row);
 signals:
     void edit(const SPad& pad, const QByteArray& map, int temps);
 };
