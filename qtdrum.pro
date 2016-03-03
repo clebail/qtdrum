@@ -10,14 +10,16 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = qtdrum
 TEMPLATE = app
-LIBS += -lrtmidi -ljack -lpthread
+LIBS += -lrtmidi -ljack -lpthread -lrt
 
 SOURCES += main.cpp\
         CMainWindow.cpp \
-    CDrumWidget.cpp
+    CDrumWidget.cpp \
+    CDrumKit.cpp
 
 HEADERS  += CMainWindow.h \
-    CDrumWidget.h
+    CDrumWidget.h \
+    CDrumKit.h
 
 FORMS    += CMainWindow.ui
 

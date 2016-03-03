@@ -4,6 +4,7 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 #include "CMainWindow.h"
+#include "CDrumKit.h"
 
 #define ONE_MINUTE              ((int)60000)
 #define ONE_SECOND              ((int)1000)
@@ -13,8 +14,37 @@ static QList<SPad> emptyList(void) {
     return list;
 }
 
+static void timerHandler(union sigval sigval) {
+    STimerParams *timerParams = (STimerParams *)sigval.sival_ptr;
+
+    if(timerParams->timerValue < timerParams->nbTemps) {
+        if(timerParams->timerValue % timerParams->nbDiv == 0) {
+            CDrumKit::getInstance()->playNote(42);
+        }
+    }else {
+        QList<QByteArray> matrices = timerParams->drumWidget->getMatrices();
+
+        timerParams->lbTimer->setText(QString::number(((timerParams->curTemps - 1) / timerParams->nbDiv) + 1));
+
+        for(int i=0;i<matrices.length();i++) {
+            int tps = timerParams->curTemps - 1;
+            QByteArray map = matrices.at(i);
+
+            if(map.at(tps) == '1') {
+                CDrumKit::getInstance()->playNote(timerParams->pads->at(i).note);
+            }
+        }
+
+        timerParams->curTemps++;
+        if(timerParams->curTemps > timerParams->nbTemps) {
+            timerParams->curTemps = 1;
+        }
+    }
+
+   timerParams->timerValue++;
+}
+
 CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
-    QStringList midiPort;
     pads = emptyList()  << SPad(QString::fromUtf8("Bass Drum 2"), 35, QByteArray("1010000010000000"))
                         << SPad(QString::fromUtf8("Bass Drum 1"), 36, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Side Stick/Rimshot"), 37, QByteArray("0000000000000000"))
@@ -51,25 +81,14 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     spNbDiv->setMinimum(MIN_DIV);
     spNbDiv->setMaximum(MAX_DIV);
 
-    midiout = new RtMidiOut();
-
-    midiPort = getMidiOutputPort();
-
-    for(int i=0;i<midiPort.length();i++) {
-        cbMidiPort->addItem(midiPort[i]);
-    }
+    cbMidiPort->addItems(CDrumKit::getInstance()->getMidiPorts());
 
     drumWidget->addPads(&pads);
 
     playing = false;
-    curTemps = 1;
+    timerParams.curTemps = 1;
+    timerParams.drumWidget = drumWidget;
     realTime = 0;
-
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(onTimer()));
-
-    startTimer = new QTimer(this);
-    connect(startTimer, SIGNAL(timeout()), this, SLOT(onStartTimer()));
 
     realTimeTimer = new QTimer(this);
     realTimeTimer->setInterval(ONE_SECOND);
@@ -78,93 +97,44 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     isOpenFileUnsaved = false;
     setOpenFileName("unamed.qdr", "unamed.qdr");
 
-    initDrumKit();
+    CDrumKit::getInstance()->init(cbMidiPort->currentIndex());
 }
 
 CMainWindow::~CMainWindow() {
-    delete midiout;
-}
-
-QStringList CMainWindow::getMidiOutputPort(void) {
-    QStringList result;
-    unsigned nPorts = midiout->getPortCount();
-
-    for(unsigned i=0;i<nPorts;i++) {
-        result << QString::fromStdString(midiout->getPortName(i));
-    }
-
-    return result;
 }
 
 void CMainWindow::on_pbPlayPause_clicked(bool) {
     playing = !playing;
 
     if(playing) {
-        curTemps = 1;
-        startTimerValue = 0;
+        timerParams.curTemps = 1;
+        timerParams.timerValue = 0;
         realTime = 0;
-        nbBeat = spNbBeat->value();
-        nbDiv = spNbDiv->value();
-        nbTemps = nbBeat * nbDiv;
-
-        startTimer->setInterval(ONE_MINUTE / spTempo->value() / nbDiv);
-        startTimer->start();
+        timerParams.nbBeat = spNbBeat->value();
+        timerParams.nbDiv = spNbDiv->value();
+        timerParams.nbTemps = timerParams.nbBeat * timerParams.nbDiv;
+        timerParams.pads = &pads;
+        timerParams.lbTimer = lbTimer;
 
         pbPlayPause->setIcon(QIcon(":/qtdrum/resources/images/stop.png"));
+
+        startPOSIXTimer(ONE_MINUTE / spTempo->value() / timerParams.nbDiv);
+
+        realTimeTimer->start();
     }else {
-        startTimer->stop();
-        timer->stop();
         realTimeTimer->stop();
 
         lbTimer->setText("0");
         lbRealTime->setText("00:00");
 
         pbPlayPause->setIcon(QIcon(":/qtdrum/resources/images/play.png"));
+
+        stopPOSIXTimer();
     }
 }
 
-void CMainWindow::on_cbMidiPort_currentIndexChanged(int) {
-    initDrumKit();
-}
-
-void CMainWindow::onStartTimer(void) {
-    if(startTimerValue % nbDiv == 0) {
-        if(startTimerValue == nbTemps) {
-            realTimeTimer->start();
-            startTimer->stop();
-
-            return;
-        }
-        playNote(42);
-    } else {
-        if(startTimerValue == nbTemps-1) {
-            timer->setInterval(ONE_MINUTE / spTempo->value() / nbDiv);
-            timer->start();
-        }
-    }
-
-    startTimerValue++;
-}
-
-void CMainWindow::onTimer(void) {
-    QList<QByteArray> matrices = drumWidget->getMatrices();
-
-    lbTimer->setText(QString::number(((curTemps - 1) / nbDiv) + 1));
-
-    for(int i=0;i<matrices.length();i++) {
-        int tps = curTemps - 1;
-        QByteArray map = matrices.at(i);
-
-        if(map.at(tps) == '1') {
-            playNote(pads.at(i).note);
-        }
-
-    }
-
-    curTemps++;
-    if(curTemps > drumWidget->getNbTemps()) {
-        curTemps = 1;
-    }
+void CMainWindow::on_cbMidiPort_currentIndexChanged(int value) {
+    CDrumKit::getInstance()->init(value);
 }
 
 void CMainWindow::onRealTimeTimer(void) {
@@ -270,42 +240,6 @@ void CMainWindow::closeEvent(QCloseEvent *event) {
     }
 }
 
-void CMainWindow::initDrumKit(void) {
-    std::vector<unsigned char> message;
-
-    if(midiout->isPortOpen()) {
-        midiout->closePort();
-    }
-    midiout->openPort(cbMidiPort->currentIndex());
-
-    message.push_back(192);
-    message.push_back(5);
-    midiout->sendMessage(&message);
-
-    message[0] = 176;
-	message[1] = 7;
-    message.push_back(127);
-    midiout->sendMessage(&message);
-}
-
-void CMainWindow::playNote(char note) {
-    std::vector<unsigned char> message;
-
-    message.push_back(153);
-    message.push_back(note);
-    message.push_back(127);
-    midiout->sendMessage(&message);
-}
-
-void CMainWindow::stopNote(char note) {
-    std::vector<unsigned char> message;
-
-    message.push_back(138);
-    message.push_back(note);
-    message.push_back(0);
-    midiout->sendMessage(&message);
-}
-
 void CMainWindow::setOpenFileName(QString openFileName, QString fullOpenFileName) {
     this->openFileName = openFileName;
     this->fullOpenFileName = fullOpenFileName;
@@ -396,4 +330,28 @@ QFont CMainWindow::getFont(QString resourceName) {
     QString family = QFontDatabase::applicationFontFamilies(id).at(0);
 
     return QFont(family);
+}
+
+bool CMainWindow::startPOSIXTimer(int intervalMS) {
+    long intervalNS = ((long)intervalMS) * 1000000L;
+    struct itimerspec itimer = { { 0,  intervalNS }, { 0, intervalNS } };
+    struct sigevent sigev;
+
+    memset (&sigev, 0, sizeof (struct sigevent));
+    sigev.sigev_value.sival_ptr = (void *)&timerParams;
+    sigev.sigev_notify = SIGEV_THREAD;
+    sigev.sigev_notify_attributes = NULL;
+    sigev.sigev_notify_function = timerHandler;
+
+    if(timer_create (CLOCK_REALTIME, &sigev, &posixTimer) == 0) {
+        if(timer_settime (posixTimer, 0, &itimer, NULL) == 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void CMainWindow::stopPOSIXTimer(void) {
+    timer_delete(posixTimer);
 }

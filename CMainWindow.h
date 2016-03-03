@@ -3,8 +3,21 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <time.h>
+#include <signal.h>
+#include <unistd.h>
 #include "ui_CMainWindow.h"
-#include "RtMidi.h"
+
+typedef struct _STimerParams {
+    int nbBeat, nbDiv, nbTemps;
+    int curTemps;
+    int timerValue;
+    QList<SPad> *pads;
+    CDrumWidget *drumWidget;
+    QLabel *lbTimer;
+}STimerParams;
+
+typedef void (*FPHandler) (union sigval);
 
 class CMainWindow : public QMainWindow, private Ui::CMainWindow {
     Q_OBJECT
@@ -14,8 +27,6 @@ public:
 private slots:
     void on_pbPlayPause_clicked(bool);
     void on_cbMidiPort_currentIndexChanged(int);
-    void onStartTimer(void);
-    void onTimer(void);
     void onRealTimeTimer(void);
     void on_actNewFile_triggered(bool);
     void on_actOpenFile_triggered(bool);
@@ -29,26 +40,24 @@ private slots:
 protected:
     virtual void closeEvent(QCloseEvent *event);
 private:
-    RtMidiOut *midiout;
     bool playing;
-    QTimer *timer, *startTimer, *realTimeTimer;
-    int curTemps, realTime;
+    QTimer *realTimeTimer;
+    STimerParams timerParams;
+    int realTime;
     QList<SPad> pads;
-    int startTimerValue;
     bool isOpenFileUnsaved;
     QString openFileName;
     QString fullOpenFileName;
-    QFont getFont(QString resourceName);
-    int nbBeat, nbDiv, nbTemps;
+    timer_t posixTimer;
 
-    QStringList getMidiOutputPort(void);
     void initDrumKit(void);
-    void playNote(char note);
-    void stopNote(char note);
     void setOpenFileName(QString openFileName, QString fullOpenFileName);
     QString createFileContent(void);
     bool loadFile(QString fileContent);
     bool saveFile(QString fileName);
+    QFont getFont(QString resourceName);
+    bool startPOSIXTimer(int intervalMS);
+    void stopPOSIXTimer(void);
 };
 
 #endif // CMAINWINDOW_H
