@@ -25,7 +25,7 @@ public:
     explicit CMainWindow(QWidget *parent = 0);
     ~CMainWindow();
 private slots:
-    void on_pbPlayPause_clicked(bool);
+    void on_pbPlayPause_clicked(bool checked = false);
     void on_cbMidiPort_currentIndexChanged(int);
     void onRealTimeTimer(void);
     void on_actNewFile_triggered(bool);
@@ -39,6 +39,7 @@ private slots:
     void on_spNbDiv_valueChanged(int);
 protected:
     virtual void closeEvent(QCloseEvent *event);
+    virtual void keyPressEvent(QKeyEvent * event);
 private:
     bool playing;
     QTimer *realTimeTimer;
@@ -58,6 +59,7 @@ private:
     QFont getFont(QString resourceName);
     bool startPOSIXTimer(int intervalMS);
     void stopPOSIXTimer(void);
+    void enableControls(bool enable);
 };
 
 #endif // CMAINWINDOW_H

@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 #include <QFileDialog>
+#include <QKeyEvent>
 #include "CMainWindow.h"
 #include "CDrumKit.h"
 
@@ -116,6 +117,8 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
         timerParams.pads = &pads;
         timerParams.lbTimer = lbTimer;
 
+        enableControls(false);
+
         pbPlayPause->setIcon(QIcon(":/qtdrum/resources/images/stop.png"));
 
         startPOSIXTimer(ONE_MINUTE / spTempo->value() / timerParams.nbDiv);
@@ -126,6 +129,8 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
 
         lbTimer->setText("0");
         lbRealTime->setText("00:00");
+
+        enableControls(true);
 
         pbPlayPause->setIcon(QIcon(":/qtdrum/resources/images/play.png"));
 
@@ -238,6 +243,14 @@ void CMainWindow::closeEvent(QCloseEvent *event) {
     }else {
         event->ignore();
     }
+}
+
+void CMainWindow::keyPressEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Return) {
+        on_pbPlayPause_clicked();
+    }
+
+    event->accept();
 }
 
 void CMainWindow::setOpenFileName(QString openFileName, QString fullOpenFileName) {
@@ -354,4 +367,11 @@ bool CMainWindow::startPOSIXTimer(int intervalMS) {
 
 void CMainWindow::stopPOSIXTimer(void) {
     timer_delete(posixTimer);
+}
+
+void CMainWindow::enableControls(bool enable) {
+    cbMidiPort->setEnabled(enable);
+    spTempo->setEnabled(enable);
+    spNbBeat->setEnabled(enable);
+    spNbDiv->setEnabled(enable);
 }
