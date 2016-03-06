@@ -15,11 +15,16 @@ LIBS += -lrtmidi -ljack -lpthread -lrt
 SOURCES += main.cpp\
         CMainWindow.cpp \
     CDrumWidget.cpp \
-    CDrumKit.cpp
+    CDrumKit.cpp \
+   	CSevenSeg.cpp \
+	CTimeAffich.cpp 
+
 
 HEADERS  += CMainWindow.h \
     CDrumWidget.h \
-    CDrumKit.h
+    CDrumKit.h \
+    CSevenSeg.h \
+	CTimeAffich.h
 
 FORMS    += CMainWindow.ui
 

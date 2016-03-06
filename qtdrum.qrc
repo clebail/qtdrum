@@ -1,8 +1,7 @@
 <RCC>
     <qresource prefix="/qtdrum">
-		<file>resources/fonts/DS-DIGI.TTF</file>
         <file>resources/images/drum-icon.svg</file>
-		<file>resources/images/play.png</file>
-		<file>resources/images/stop.png</file>
+        <file>resources/images/play.png</file>
+        <file>resources/images/stop.png</file>
     </qresource>
 </RCC>

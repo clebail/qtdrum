@@ -42,9 +42,21 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>32</height>
+       </size>
+      </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="spacing">
-        <number>2</number>
+        <number>8</number>
        </property>
        <property name="leftMargin">
         <number>2</number>
@@ -218,7 +230,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="lbTimer">
+        <widget class="CSevenSeg" name="ssTemps" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -227,66 +239,31 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>42</width>
+           <width>20</width>
            <height>32</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>42</width>
+           <width>20</width>
            <height>32</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="toolTip">
-          <string>Current beat</string>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QLabel { color : #9365b8; }</string>
-         </property>
-         <property name="lineWidth">
-          <number>0</number>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
-         </property>
-         <property name="margin">
-          <number>0</number>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="lbRealTime">
+        <widget class="CTimeAffich" name="taTimer" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>80</horstretch>
-           <verstretch>32</verstretch>
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="minimumSize">
           <size>
-           <width>80</width>
+           <width>94</width>
            <height>32</height>
           </size>
-         </property>
-         <property name="toolTip">
-          <string>Elapsed time</string>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QLabel { color: #1FB5AC; }</string>
-         </property>
-         <property name="text">
-          <string>00:00</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
          </property>
         </widget>
        </item>
@@ -304,7 +281,7 @@
      <x>0</x>
      <y>0</y>
      <width>663</width>
-     <height>30</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -365,6 +342,18 @@
    <class>CDrumWidget</class>
    <extends>QWidget</extends>
    <header>CDrumWidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CSevenSeg</class>
+   <extends>QWidget</extends>
+   <header>CSevenSeg.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CTimeAffich</class>
+   <extends>QWidget</extends>
+   <header>CTimeAffich.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -8,16 +8,21 @@
 #include <unistd.h>
 #include "ui_CMainWindow.h"
 
-typedef struct _STimerParams {
+typedef void (*FPHandler) (union sigval);
+
+class CTimerParams : public QObject {
+    Q_OBJECT
+public:
     int nbBeat, nbDiv, nbTemps;
     int curTemps;
     int timerValue;
     QList<SPad> *pads;
     CDrumWidget *drumWidget;
-    QLabel *lbTimer;
-}STimerParams;
 
-typedef void (*FPHandler) (union sigval);
+    void emitTempsUpdate(int value);
+signals:
+    void tempsUpdate(int value);
+};
 
 class CMainWindow : public QMainWindow, private Ui::CMainWindow {
     Q_OBJECT
@@ -37,13 +42,14 @@ private slots:
     void on_spTempo_valueChanged(int);
     void on_spNbBeat_valueChanged(int);
     void on_spNbDiv_valueChanged(int);
+    void onTempsUpdate(int);
 protected:
     virtual void closeEvent(QCloseEvent *event);
     virtual void keyPressEvent(QKeyEvent * event);
 private:
     bool playing;
     QTimer *realTimeTimer;
-    STimerParams timerParams;
+    CTimerParams timerParams;
     int realTime;
     QList<SPad> pads;
     bool isOpenFileUnsaved;

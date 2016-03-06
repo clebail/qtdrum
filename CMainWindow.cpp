@@ -16,7 +16,7 @@ static QList<SPad> emptyList(void) {
 }
 
 static void timerHandler(union sigval sigval) {
-    STimerParams *timerParams = (STimerParams *)sigval.sival_ptr;
+    CTimerParams *timerParams = (CTimerParams *)sigval.sival_ptr;
 
     if(timerParams->timerValue < timerParams->nbTemps) {
         if(timerParams->timerValue % timerParams->nbDiv == 0) {
@@ -25,7 +25,7 @@ static void timerHandler(union sigval sigval) {
     }else {
         QList<QByteArray> matrices = timerParams->drumWidget->getMatrices();
 
-        timerParams->lbTimer->setText(QString::number(((timerParams->curTemps - 1) / timerParams->nbDiv) + 1));
+        timerParams->emitTempsUpdate(((timerParams->curTemps - 1) / timerParams->nbDiv) + 1);
 
         for(int i=0;i<matrices.length();i++) {
             int tps = timerParams->curTemps - 1;
@@ -43,6 +43,10 @@ static void timerHandler(union sigval sigval) {
     }
 
    timerParams->timerValue++;
+}
+
+void CTimerParams::emitTempsUpdate(int value) {
+    emit(tempsUpdate(value));
 }
 
 CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
@@ -69,18 +73,13 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
                         ;
     setupUi(this);
 
-    QFont afficheurfont = getFont(":/qtdrum/resources/fonts/DS-DIGI.TTF");
-
-    afficheurfont.setPixelSize(30);
-    afficheurfont.setBold(true);
-
-    lbTimer->setFont(afficheurfont);
-    lbRealTime->setFont(afficheurfont);
-
     spNbBeat->setMinimum(MIN_BEAT);
     spNbBeat->setMaximum(MAX_BEAT);
     spNbDiv->setMinimum(MIN_DIV);
     spNbDiv->setMaximum(MAX_DIV);
+
+    ssTemps->setSegmentColor(QColor(0x93, 0x65, 0xb8));
+    taTimer->setSegmentColor(QColor(0x1f, 0xb5, 0xac));
 
     cbMidiPort->addItems(CDrumKit::getInstance()->getMidiPorts());
 
@@ -99,6 +98,8 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     setOpenFileName("unamed.qdr", "unamed.qdr");
 
     CDrumKit::getInstance()->init(cbMidiPort->currentIndex());
+
+    connect(&timerParams, SIGNAL(tempsUpdate(int)), this, SLOT(onTempsUpdate(int)));
 }
 
 CMainWindow::~CMainWindow() {
@@ -115,7 +116,6 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
         timerParams.nbDiv = spNbDiv->value();
         timerParams.nbTemps = timerParams.nbBeat * timerParams.nbDiv;
         timerParams.pads = &pads;
-        timerParams.lbTimer = lbTimer;
 
         enableControls(false);
 
@@ -127,8 +127,8 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
     }else {
         realTimeTimer->stop();
 
-        lbTimer->setText("0");
-        lbRealTime->setText("00:00");
+        ssTemps->setValue(0);
+        taTimer->setValues(0, 0);
 
         enableControls(true);
 
@@ -150,7 +150,7 @@ void CMainWindow::onRealTimeTimer(void) {
     sec = realTime % 60;
     min = realTime / 60;
 
-    lbRealTime->setText(QString("%1").arg(min, 2, 10, QChar('0'))+":"+QString("%1").arg(sec, 2, 10, QChar('0')));
+    taTimer->setValues(min, sec);
 }
 
 void CMainWindow::on_actNewFile_triggered(bool) {
@@ -235,6 +235,10 @@ void CMainWindow::on_spNbBeat_valueChanged(int value) {
 void CMainWindow::on_spNbDiv_valueChanged(int value) {
     drumWidget->setNbDivPerBeat(value);
     isOpenFileUnsaved = true;
+}
+
+void CMainWindow::onTempsUpdate(int value) {
+    ssTemps->setValue(value);
 }
 
 void CMainWindow::closeEvent(QCloseEvent *event) {
