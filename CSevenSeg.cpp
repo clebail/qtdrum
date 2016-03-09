@@ -28,8 +28,8 @@ CSevenSeg::CSevenSeg(QWidget *parent) : QWidget(parent) {
     value = 0;
 
     segmentColor = Qt::red;
-    segmentInactifColor = QColor(0xee, 0xee, 0xee);
-    backgroundColor = QColor(0xdd, 0xdd, 0xdd);
+    segmentInactifColor = QColor(0xfe, 0xfe, 0xfe);
+    backgroundColor = QColor(0xef, 0xef, 0xef);
 }
 
 void CSevenSeg::setValue(int value) {

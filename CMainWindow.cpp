@@ -73,6 +73,8 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
                         ;
     setupUi(this);
 
+    setStyleSheet("QMainWindow { background-color: #efefef; }");
+
     spNbBeat->setMinimum(MIN_BEAT);
     spNbBeat->setMaximum(MAX_BEAT);
     spNbDiv->setMinimum(MIN_DIV);
