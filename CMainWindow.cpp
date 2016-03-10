@@ -50,18 +50,18 @@ void CTimerParams::emitTempsUpdate(int value) {
 }
 
 CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
-    pads = emptyList()  << SPad(QString::fromUtf8("Bass Drum 2"), 35, QByteArray("1010000010000000"))
+    pads = emptyList()  << SPad(QString::fromUtf8("Bass Drum 2"), 35, QByteArray("1000000110100000"))
                         << SPad(QString::fromUtf8("Bass Drum 1"), 36, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Side Stick/Rimshot"), 37, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Snare Drum 1"), 38, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Hand Clap"), 39, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Snare Drum 2"), 40, QByteArray("0000100000001000"))
                         << SPad(QString::fromUtf8("Low Tom 2"), 41, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Closed Hi-hat"), 42, QByteArray("1010101010101000"))
+                        << SPad(QString::fromUtf8("Closed Hi-hat"), 42, QByteArray("1010100010101000"))
                         << SPad(QString::fromUtf8("Low Tom 1"), 43, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Pedal Hi-hat"), 44, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Mid Tom 2"), 45, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Open Hi-hat"), 46, QByteArray("0000000000000010"))
+                        << SPad(QString::fromUtf8("Open Hi-hat"), 46, QByteArray("0000001000000010"))
                         << SPad(QString::fromUtf8("Mid Tom 1"), 47, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("High Tom 2"), 48, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Crash Cymbal 1"), 49, QByteArray("0000000000000000"))
