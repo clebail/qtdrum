@@ -29,6 +29,7 @@ class CMainWindow : public QMainWindow, private Ui::CMainWindow {
 public:
     explicit CMainWindow(QWidget *parent = 0);
     ~CMainWindow();
+    virtual bool eventFilter(QObject *object, QEvent *event);
 private slots:
     void on_pbPlayPause_clicked(bool checked = false);
     void on_cbMidiPort_currentIndexChanged(int);
@@ -45,7 +46,6 @@ private slots:
     void onTempsUpdate(int);
 protected:
     virtual void closeEvent(QCloseEvent *event);
-    virtual void keyPressEvent(QKeyEvent * event);
 private:
     bool playing;
     QTimer *realTimeTimer;

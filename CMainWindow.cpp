@@ -102,9 +102,26 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     CDrumKit::getInstance()->init(cbMidiPort->currentIndex());
 
     connect(&timerParams, SIGNAL(tempsUpdate(int)), this, SLOT(onTempsUpdate(int)));
+
+    qApp->installEventFilter(this);
 }
 
 CMainWindow::~CMainWindow() {
+}
+
+bool CMainWindow::eventFilter(QObject *object, QEvent *event) {
+    if(event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+
+        if(keyEvent->key() == Qt::Key_B) {
+            on_pbPlayPause_clicked();
+
+            return true;
+        }
+    }
+
+    return QObject::eventFilter(object, event);
 }
 
 void CMainWindow::on_pbPlayPause_clicked(bool) {
@@ -249,14 +266,6 @@ void CMainWindow::closeEvent(QCloseEvent *event) {
     }else {
         event->ignore();
     }
-}
-
-void CMainWindow::keyPressEvent(QKeyEvent *event) {
-    if(event->key() == Qt::Key_Return) {
-        on_pbPlayPause_clicked();
-    }
-
-    event->accept();
 }
 
 void CMainWindow::setOpenFileName(QString openFileName, QString fullOpenFileName) {
