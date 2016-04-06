@@ -174,7 +174,7 @@ void CMainWindow::onRealTimeTimer(void) {
     sec = realTime % 60;
     min = realTime / 60;
 
-    if(sec == 0 && min != 0) {
+    if(sec == 0 && min != 0 && cbSoundEMinute->isChecked()) {
         bells->play();
     }
 
