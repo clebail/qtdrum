@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <phonon/phonon>
 #include <time.h>
 #include <signal.h>
 #include <unistd.h>
@@ -56,6 +57,8 @@ private:
     QString openFileName;
     QString fullOpenFileName;
     timer_t posixTimer;
+    Phonon::MediaObject *bells;
+    Phonon::AudioOutput *bellsOutput;
 
     void initDrumKit(void);
     void setOpenFileName(QString openFileName, QString fullOpenFileName);

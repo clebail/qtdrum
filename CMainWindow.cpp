@@ -103,6 +103,11 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
 
     connect(&timerParams, SIGNAL(tempsUpdate(int)), this, SLOT(onTempsUpdate(int)));
 
+    bells = new Phonon::MediaObject(this);
+    bells->setCurrentSource(Phonon::MediaSource(":/qtdrum/resources/sound.wav"));
+    bellsOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
+    Phonon::createPath(bells, bellsOutput);
+
     qApp->installEventFilter(this);
 }
 
@@ -168,6 +173,10 @@ void CMainWindow::onRealTimeTimer(void) {
 
     sec = realTime % 60;
     min = realTime / 60;
+
+    if(sec == 0 && min != 0) {
+        bells->play();
+    }
 
     taTimer->setValues(min, sec);
 }

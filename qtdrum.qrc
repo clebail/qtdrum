@@ -3,5 +3,6 @@
         <file>resources/images/drum-icon.svg</file>
         <file>resources/images/play.png</file>
         <file>resources/images/stop.png</file>
+        <file>resources/sound.wav</file>
     </qresource>
 </RCC>
