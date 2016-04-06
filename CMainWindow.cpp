@@ -104,7 +104,6 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     connect(&timerParams, SIGNAL(tempsUpdate(int)), this, SLOT(onTempsUpdate(int)));
 
     bells = new Phonon::MediaObject(this);
-    bells->setCurrentSource(Phonon::MediaSource(":/qtdrum/resources/sound.wav"));
     bellsOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
     Phonon::createPath(bells, bellsOutput);
 
@@ -175,6 +174,7 @@ void CMainWindow::onRealTimeTimer(void) {
     min = realTime / 60;
 
     if(sec == 0 && min != 0 && cbSoundEMinute->isChecked()) {
+    	bells->setCurrentSource(QString(":/qtdrum/resources/sound.wav"));
         bells->play();
     }
 
@@ -271,6 +271,9 @@ void CMainWindow::onTempsUpdate(int value) {
 
 void CMainWindow::closeEvent(QCloseEvent *event) {
     if(!isOpenFileUnsaved || QMessageBox::question(this, tr("Confirmation"), tr("Current file not save, quit ?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+		bells->clearQueue();
+		delete bells;
+
         event->accept();
     }else {
         event->ignore();
