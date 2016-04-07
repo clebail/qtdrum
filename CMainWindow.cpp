@@ -271,9 +271,6 @@ void CMainWindow::onTempsUpdate(int value) {
 
 void CMainWindow::closeEvent(QCloseEvent *event) {
     if(!isOpenFileUnsaved || QMessageBox::question(this, tr("Confirmation"), tr("Current file not save, quit ?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
-		bells->clearQueue();
-		delete bells;
-
         event->accept();
     }else {
         event->ignore();
