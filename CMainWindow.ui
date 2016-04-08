@@ -116,7 +116,7 @@
        <item>
         <widget class="QCheckBox" name="cbSoundEMinute">
          <property name="text">
-          <string>Sound Every Min.</string>
+          <string>Speech Every Min.</string>
          </property>
          <property name="checked">
           <bool>true</bool>
