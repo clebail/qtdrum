@@ -282,7 +282,7 @@
           <item>
            <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>Mute</string>
+             <string>Mute :</string>
             </property>
            </widget>
           </item>
@@ -305,7 +305,7 @@
           <item>
            <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>Over</string>
+             <string>Over :</string>
             </property>
            </widget>
           </item>
