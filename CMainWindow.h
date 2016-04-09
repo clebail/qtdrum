@@ -14,8 +14,9 @@ typedef void (*FPHandler) (union sigval);
 class CTimerParams : public QObject {
     Q_OBJECT
 public:
-    int nbBeat, nbDiv, nbTemps;
+    int nbBeat, nbDiv, nbTemps, nbMute, nbMuteOver;
     int curTemps;
+    int curMeasure;
     int timerValue;
     QList<SPad> *pads;
     CDrumWidget *drumWidget;

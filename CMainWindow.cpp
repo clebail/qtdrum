@@ -23,16 +23,29 @@ static void timerHandler(union sigval sigval) {
             CDrumKit::getInstance()->playNote(42);
         }
     }else {
+        bool mute = false;
         QList<QByteArray> matrices = timerParams->drumWidget->getMatrices();
 
         timerParams->emitTempsUpdate(((timerParams->curTemps - 1) / timerParams->nbDiv) + 1);
 
-        for(int i=0;i<matrices.length();i++) {
-            int tps = timerParams->curTemps - 1;
-            QByteArray map = matrices.at(i);
+        timerParams->curMeasure+=(timerParams->curTemps+1 > timerParams->nbTemps ? 1 : 0);
 
-            if(map.at(tps) == '1') {
-                CDrumKit::getInstance()->playNote(timerParams->pads->at(i).note);
+        if(timerParams->nbMute != 0 && timerParams->nbMuteOver != 0) {
+            int curMInBcl = timerParams->curMeasure % (timerParams->nbMuteOver + 1);
+
+            if(curMInBcl > timerParams->nbMuteOver - timerParams->nbMute) {
+                mute = true;
+            }
+        }
+
+        if(!mute) {
+            for(int i=0;i<matrices.length();i++) {
+                int tps = timerParams->curTemps - 1;
+                QByteArray map = matrices.at(i);
+
+                if(map.at(tps) == '1') {
+                    CDrumKit::getInstance()->playNote(timerParams->pads->at(i).note);
+                }
             }
         }
 
@@ -42,7 +55,7 @@ static void timerHandler(union sigval sigval) {
         }
     }
 
-   timerParams->timerValue++;
+    timerParams->timerValue++;
 }
 
 void CTimerParams::emitTempsUpdate(int value) {
@@ -88,9 +101,7 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     drumWidget->addPads(&pads);
 
     playing = false;
-    timerParams.curTemps = 1;
     timerParams.drumWidget = drumWidget;
-    realTime = 0;
 
     realTimeTimer = new QTimer(this);
     realTimeTimer->setInterval(ONE_SECOND);
@@ -133,6 +144,9 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
 
     if(playing) {
         timerParams.curTemps = 1;
+        timerParams.curMeasure = 1;
+        timerParams.nbMute = spMute->value();
+        timerParams.nbMuteOver = spMuteOver->value();
         timerParams.timerValue = 0;
         realTime = 0;
         timerParams.nbBeat = spNbBeat->value();
@@ -404,4 +418,6 @@ void CMainWindow::enableControls(bool enable) {
     spTempo->setEnabled(enable);
     spNbBeat->setEnabled(enable);
     spNbDiv->setEnabled(enable);
+    spMute->setEnabled(enable);
+    spMuteOver->setEnabled(enable);
 }
