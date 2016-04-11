@@ -188,12 +188,10 @@ void CMainWindow::onRealTimeTimer(void) {
     min = realTime / 60;
 
     if(sec == 0 && min != 0 && cbSoundEMinute->isChecked()) {
-        QString fileName = ":/qtdrum/resources/sounds/"+QString::number(min)+".ogg";
-
-        if(QFile::exists(fileName)) {
-            bells->setCurrentSource(fileName);
+        if(min <= 20) {
+            bells->setCurrentSource(QUrl("qrc:///qtdrum/resources/sounds/"+QString::number(min)+".ogg"));
         } else {
-            bells->setCurrentSource(QString(":/qtdrum/resources/sounds/bell.ogg"));
+            bells->setCurrentSource(QUrl("qrc:///qtdrum/resources/sounds/bell.ogg"));
         }
         bells->play();
     }
