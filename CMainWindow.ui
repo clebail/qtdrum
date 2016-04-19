@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>849</width>
+    <width>855</width>
     <height>583</height>
    </rect>
   </property>
@@ -420,8 +420,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>849</width>
-     <height>18</height>
+     <width>855</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -436,7 +436,14 @@
     <addaction name="separator"/>
     <addaction name="actQuit"/>
    </widget>
+   <widget class="QMenu" name="menuPreferences">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="actOptions"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuPreferences"/>
   </widget>
   <action name="actNewFile">
    <property name="text">
@@ -473,6 +480,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actOptions">
+   <property name="text">
+    <string>&amp;Options</string>
    </property>
   </action>
  </widget>

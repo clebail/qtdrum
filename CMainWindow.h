@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTimer>
+#include <QSettings>
 #include <phonon/phonon>
 #include <time.h>
 #include <signal.h>
@@ -41,6 +42,7 @@ private slots:
     void on_actSave_triggered(bool);
     void on_actSaveAs_triggered(bool);
     void on_actQuit_triggered(bool);
+    void on_actOptions_triggered(bool);
     void on_drumWidget_edit(const SPad&, const QByteArray&, int);
     void on_spTempo_valueChanged(int);
     void on_spNbBeat_valueChanged(int);
@@ -60,6 +62,7 @@ private:
     timer_t posixTimer;
     Phonon::MediaObject *bells;
     Phonon::AudioOutput *bellsOutput;
+    QSettings *settings;
 
     void initDrumKit(void);
     void setOpenFileName(QString openFileName, QString fullOpenFileName);

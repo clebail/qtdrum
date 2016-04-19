@@ -3,26 +3,26 @@
         <file>resources/images/drum-icon.svg</file>
         <file>resources/images/play.png</file>
         <file>resources/images/stop.png</file>
-        <file>resources/sounds/1.ogg</file>
-        <file>resources/sounds/2.ogg</file>
-        <file>resources/sounds/3.ogg</file>
-        <file>resources/sounds/4.ogg</file>
-        <file>resources/sounds/5.ogg</file>
-        <file>resources/sounds/6.ogg</file>
-        <file>resources/sounds/7.ogg</file>
-        <file>resources/sounds/8.ogg</file>
-        <file>resources/sounds/9.ogg</file>
-        <file>resources/sounds/10.ogg</file>
-        <file>resources/sounds/11.ogg</file>
-        <file>resources/sounds/12.ogg</file>
-        <file>resources/sounds/13.ogg</file>
-        <file>resources/sounds/14.ogg</file>
-        <file>resources/sounds/15.ogg</file>
-        <file>resources/sounds/16.ogg</file>
-        <file>resources/sounds/17.ogg</file>
-        <file>resources/sounds/18.ogg</file>
-        <file>resources/sounds/19.ogg</file>
-        <file>resources/sounds/20.ogg</file>
+        <file>resources/sounds/fr/1.ogg</file>
+        <file>resources/sounds/fr/2.ogg</file>
+        <file>resources/sounds/fr/3.ogg</file>
+        <file>resources/sounds/fr/4.ogg</file>
+        <file>resources/sounds/fr/5.ogg</file>
+        <file>resources/sounds/fr/6.ogg</file>
+        <file>resources/sounds/fr/7.ogg</file>
+        <file>resources/sounds/fr/8.ogg</file>
+        <file>resources/sounds/fr/9.ogg</file>
+        <file>resources/sounds/fr/10.ogg</file>
+        <file>resources/sounds/fr/11.ogg</file>
+        <file>resources/sounds/fr/12.ogg</file>
+        <file>resources/sounds/fr/13.ogg</file>
+        <file>resources/sounds/fr/14.ogg</file>
+        <file>resources/sounds/fr/15.ogg</file>
+        <file>resources/sounds/fr/16.ogg</file>
+        <file>resources/sounds/fr/17.ogg</file>
+        <file>resources/sounds/fr/18.ogg</file>
+        <file>resources/sounds/fr/19.ogg</file>
+        <file>resources/sounds/fr/20.ogg</file>
         <file>resources/sounds/bell.ogg</file>
     </qresource>
 </RCC>

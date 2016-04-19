@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include "CMainWindow.h"
 #include "CDrumKit.h"
+#include "COptionsDialog.h"
 
 #define ONE_MINUTE              ((int)60000)
 #define ONE_SECOND              ((int)1000)
@@ -88,6 +89,8 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
 
     setStyleSheet("QMainWindow { background-color: #efefef; }");
 
+    settings = new QSettings("clebail", "qtdrum");
+
     spNbBeat->setMinimum(MIN_BEAT);
     spNbBeat->setMaximum(MAX_BEAT);
     spNbDiv->setMinimum(MIN_DIV);
@@ -122,14 +125,19 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
 }
 
 CMainWindow::~CMainWindow() {
+    settings->sync();
+
+    delete settings;
 }
 
 bool CMainWindow::eventFilter(QObject *object, QEvent *event) {
+    int key = settings->value("playPauseButton", Qt::Key_B).toInt();
+
     if(event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 
 
-        if(keyEvent->key() == Qt::Key_B) {
+        if(keyEvent->key() == key) {
             on_pbPlayPause_clicked();
 
             return true;
@@ -181,6 +189,7 @@ void CMainWindow::on_cbMidiPort_currentIndexChanged(int value) {
 
 void CMainWindow::onRealTimeTimer(void) {
     int sec, min;
+    QString language = settings->value("speechLanguage", "fr").toString();
 
     realTime++;
 
@@ -189,7 +198,7 @@ void CMainWindow::onRealTimeTimer(void) {
 
     if(sec == 0 && min != 0 && cbSoundEMinute->isChecked()) {
         if(min <= 20) {
-            bells->setCurrentSource(QUrl("qrc:///qtdrum/resources/sounds/"+QString::number(min)+".ogg"));
+            bells->setCurrentSource(QUrl("qrc:///qtdrum/resources/sounds/"+language+QString("/")+QString::number(min)+".ogg"));
         } else {
             bells->setCurrentSource(QUrl("qrc:///qtdrum/resources/sounds/bell.ogg"));
         }
@@ -263,6 +272,20 @@ void CMainWindow::on_actSaveAs_triggered(bool) {
 
 void CMainWindow::on_actQuit_triggered(bool) {
     this->close();
+}
+
+void CMainWindow::on_actOptions_triggered(bool) {
+    COptionsDialog *optionsDialog = new COptionsDialog(this);
+
+    optionsDialog->setPlayPauseButton(settings->value("playPauseButton", Qt::Key_B).toInt());
+    optionsDialog->setSpeechLanguage(settings->value("speechLanguage", "fr").toString());
+
+    if(optionsDialog->exec() == QDialog::Accepted) {
+        settings->setValue("playPauseButton", optionsDialog->getPlayPauseButton());
+        settings->setValue("speechLanguage", optionsDialog->getSpeechLanguage());
+    }
+
+    delete optionsDialog;
 }
 
 void CMainWindow::on_drumWidget_edit(const SPad&, const QByteArray&, int) {
@@ -418,4 +441,5 @@ void CMainWindow::enableControls(bool enable) {
     spNbDiv->setEnabled(enable);
     spMute->setEnabled(enable);
     spMuteOver->setEnabled(enable);
+    actOptions->setEnabled(enable);
 }

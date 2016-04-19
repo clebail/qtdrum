@@ -17,16 +17,19 @@ SOURCES += main.cpp\
     CDrumWidget.cpp \
     CDrumKit.cpp \
    	CSevenSeg.cpp \
-	CTimeAffich.cpp 
+	CTimeAffich.cpp \ 
+    COptionsDialog.cpp
 
 
 HEADERS  += CMainWindow.h \
     CDrumWidget.h \
     CDrumKit.h \
     CSevenSeg.h \
-	CTimeAffich.h
+	CTimeAffich.h \
+    COptionsDialog.h
 
-FORMS    += CMainWindow.ui
+FORMS    += CMainWindow.ui \
+    COptionsDialog.ui
 
 RESOURCES += \
     qtdrum.qrc
