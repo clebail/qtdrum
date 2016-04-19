@@ -1,6 +1,8 @@
 # qtdrum
 Very very small drum simulator in **LINUX** qt / rtmidi that I use to work the guitar.
 
+![alt text](https://github.com/clebail/qtdrum/raw/master/resources/images/screen_shot_1.png "qtdrum")
+
 ## Features
 * WYSIWYG loop editor
 * Choosing the number of times and the number of division of time of the loop
