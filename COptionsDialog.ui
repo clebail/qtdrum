@@ -72,6 +72,11 @@
         </property>
         <item>
          <property name="text">
+          <string>en</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
           <string>fr</string>
          </property>
         </item>

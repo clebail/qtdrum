@@ -23,6 +23,26 @@
         <file>resources/sounds/fr/18.ogg</file>
         <file>resources/sounds/fr/19.ogg</file>
         <file>resources/sounds/fr/20.ogg</file>
+        <file>resources/sounds/en/1.ogg</file>
+        <file>resources/sounds/en/2.ogg</file>
+        <file>resources/sounds/en/3.ogg</file>
+        <file>resources/sounds/en/4.ogg</file>
+        <file>resources/sounds/en/5.ogg</file>
+        <file>resources/sounds/en/6.ogg</file>
+        <file>resources/sounds/en/7.ogg</file>
+        <file>resources/sounds/en/8.ogg</file>
+        <file>resources/sounds/en/9.ogg</file>
+        <file>resources/sounds/en/10.ogg</file>
+        <file>resources/sounds/en/11.ogg</file>
+        <file>resources/sounds/en/12.ogg</file>
+        <file>resources/sounds/en/13.ogg</file>
+        <file>resources/sounds/en/14.ogg</file>
+        <file>resources/sounds/en/15.ogg</file>
+        <file>resources/sounds/en/16.ogg</file>
+        <file>resources/sounds/en/17.ogg</file>
+        <file>resources/sounds/en/18.ogg</file>
+        <file>resources/sounds/en/19.ogg</file>
+        <file>resources/sounds/en/20.ogg</file>
         <file>resources/sounds/bell.ogg</file>
     </qresource>
 </RCC>
