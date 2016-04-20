@@ -31,5 +31,7 @@ HEADERS  += CMainWindow.h \
 FORMS    += CMainWindow.ui \
     COptionsDialog.ui
 
+TRANSLATIONS += qtdrum_fr.ts
+
 RESOURCES += \
     qtdrum.qrc

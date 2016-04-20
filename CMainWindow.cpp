@@ -64,6 +64,8 @@ void CTimerParams::emitTempsUpdate(int value) {
 }
 
 CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
+    setupUi(this);
+
     pads = emptyList()  << SPad(QString::fromUtf8("Bass Drum 2"), 35, QByteArray("1000000110100000"))
                         << SPad(QString::fromUtf8("Bass Drum 1"), 36, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Side Stick/Rimshot"), 37, QByteArray("0000000000000000"))
@@ -85,7 +87,6 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
                         << SPad(QString::fromUtf8("Crash Cymbal 2"), 57, QByteArray("0000000000000000"))
                         << SPad(QString::fromUtf8("Ride Cymbal 2"), 59, QByteArray("0000000000000000"))
                         ;
-    setupUi(this);
 
     setStyleSheet("QMainWindow { background-color: #efefef; }");
 
@@ -322,7 +323,7 @@ void CMainWindow::setOpenFileName(QString openFileName, QString fullOpenFileName
     this->openFileName = openFileName;
     this->fullOpenFileName = fullOpenFileName;
 
-    actSave->setText(tr("Save ")+openFileName);
+    actSave->setText(tr("&Save")+" "+openFileName);
 }
 
 QString CMainWindow::createFileContent(void) {
