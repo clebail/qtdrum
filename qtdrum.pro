@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = qtdrum
 TEMPLATE = app
+INCLUDEPATH += /usr/include/rtmidi /usr/include/alsa
 LIBS += -lrtmidi -ljack -lpthread -lrt
 
 SOURCES += main.cpp\
