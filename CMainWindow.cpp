@@ -198,9 +198,7 @@ void CMainWindow::onRealTimeTimer(void) {
 
     if(sec == 0 && min != 0 && cbSoundEMinute->isChecked()) {
         if(min <= 20) {
-            if(mediaPlayer->media().isNull()) {
-                mediaPlayer->setMedia(QUrl("qrc:///qtdrum/resources/sounds/"+language+QString("/")+QString::number(min)+".ogg"));
-            }
+            mediaPlayer->setMedia(QUrl("qrc:///qtdrum/resources/sounds/"+language+QString("/")+QString::number(min)+".ogg"));
         } else {
             mediaPlayer->setMedia(QUrl("qrc:///qtdrum/resources/sounds/bell.ogg"));
         }
