@@ -4,10 +4,10 @@
 #include <QtDebug>
 #include "CDrumWidget.h"
 
-#define TEMPS_WIDTH             ((int)24)
-#define TEMPS_HEIGHT            ((int)24)
-#define TEMPS_CASE_DIFF_WIDTH   ((int)4)
-#define TEMPS_CASE_DIFF_HEIGHT  ((int)4)
+#define TEMPS_WIDTH             (static_cast<int>(24))
+#define TEMPS_HEIGHT            (static_cast<int>(24))
+#define TEMPS_CASE_DIFF_WIDTH   (static_cast<int>(4))
+#define TEMPS_CASE_DIFF_HEIGHT  (static_cast<int>(4))
 #define CASE_WIDTH              (TEMPS_WIDTH-TEMPS_CASE_DIFF_WIDTH*2)
 #define CASE_HEIGHT             (TEMPS_HEIGHT-TEMPS_CASE_DIFF_HEIGHT*2)
 
@@ -18,7 +18,7 @@ CDrumWidget::CDrumWidget(QWidget *parent) : QWidget(parent) {
 }
 
 void CDrumWidget::addPad(SPad *pad, bool doRepaint) {
-    pads.append(*pad);;
+    pads.append(*pad);
     matrice.append(QByteArray(pad->map));
 
     if(doRepaint) {

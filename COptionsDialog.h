@@ -7,7 +7,7 @@
 class COptionsDialog : public QDialog, private Ui::COptionsDialog {
     Q_OBJECT
 public:
-    explicit COptionsDialog(QWidget *parent = 0);
+    explicit COptionsDialog(QWidget *parent = nullptr);
     ~COptionsDialog();
 
     void setPlayPauseButton(int key);

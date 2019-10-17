@@ -6,21 +6,22 @@
 int main(int argc, char *argv[]){
     QTranslator qtTranslator, qtDrumTranslator;
     QApplication a(argc, argv);
+    CMainWindow *w;
+    int ret;
 
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("utf8"));
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf8"));
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("utf8"));
-    QString locale = QLocale::system().name().section('_', 0, 0);
-
-    qtTranslator.load("qt_"+locale, a.applicationDirPath());
+    qtTranslator.load("qt_fr", a.applicationDirPath());
     a.installTranslator(&qtTranslator);
 
-    qtDrumTranslator.load("qtdrum_"+locale, a.applicationDirPath());
+    qtDrumTranslator.load("qtdrum_fr", a.applicationDirPath());
     a.installTranslator(&qtDrumTranslator);
 
-    CMainWindow w;
 
-    w.show();
+    w = new CMainWindow();
+    w->show();
 
-    return a.exec();
+    ret = a.exec();
+
+    delete w;
+
+    return ret;
 }

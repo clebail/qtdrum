@@ -8,8 +8,8 @@
 #include "CDrumKit.h"
 #include "COptionsDialog.h"
 
-#define ONE_MINUTE              ((int)60000)
-#define ONE_SECOND              ((int)1000)
+#define ONE_MINUTE              (static_cast<int>(60000))
+#define ONE_SECOND              (static_cast<int>(100))
 
 static QList<SPad> emptyList(void) {
     QList<SPad> list;
@@ -17,7 +17,7 @@ static QList<SPad> emptyList(void) {
 }
 
 static void timerHandler(union sigval sigval) {
-    CTimerParams *timerParams = (CTimerParams *)sigval.sival_ptr;
+    CTimerParams *timerParams = static_cast<CTimerParams *>(sigval.sival_ptr);
 
     if(timerParams->timerValue < timerParams->nbTemps) {
         if(timerParams->timerValue % timerParams->nbDiv == 0) {
@@ -45,7 +45,7 @@ static void timerHandler(union sigval sigval) {
                 QByteArray map = matrices.at(i);
 
                 if(map.at(tps) == '1') {
-                    CDrumKit::getInstance()->playNote(timerParams->pads->at(i).note);
+                    CDrumKit::getInstance()->playNote(static_cast<char>(timerParams->pads->at(i).note));
                 }
             }
         }
@@ -118,9 +118,7 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
 
     connect(&timerParams, SIGNAL(tempsUpdate(int)), this, SLOT(onTempsUpdate(int)));
 
-    bells = new Phonon::MediaObject(this);
-    bellsOutput = new Phonon::AudioOutput(Phonon::MusicCategory, this);
-    Phonon::createPath(bells, bellsOutput);
+    mediaPlayer = new QMediaPlayer();
 
     qApp->installEventFilter(this);
 }
@@ -128,6 +126,7 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
 CMainWindow::~CMainWindow() {
     settings->sync();
 
+    delete mediaPlayer;
     delete settings;
 }
 
@@ -199,11 +198,14 @@ void CMainWindow::onRealTimeTimer(void) {
 
     if(sec == 0 && min != 0 && cbSoundEMinute->isChecked()) {
         if(min <= 20) {
-            bells->setCurrentSource(QUrl("qrc:///qtdrum/resources/sounds/"+language+QString("/")+QString::number(min)+".ogg"));
+            if(mediaPlayer->media().isNull()) {
+                mediaPlayer->setMedia(QUrl("qrc:///qtdrum/resources/sounds/"+language+QString("/")+QString::number(min)+".ogg"));
+            }
         } else {
-            bells->setCurrentSource(QUrl("qrc:///qtdrum/resources/sounds/bell.ogg"));
+            mediaPlayer->setMedia(QUrl("qrc:///qtdrum/resources/sounds/bell.ogg"));
         }
-        bells->play();
+
+        mediaPlayer->play();
     }
 
     taTimer->setValues(min, sec);
@@ -254,7 +256,7 @@ void CMainWindow::on_actSave_triggered(bool) {
 }
 
 void CMainWindow::on_actSaveAs_triggered(bool) {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Open qtdrum file"), fullOpenFileName, tr("qtdum file (*.qdr)"), 0, QFileDialog::DontConfirmOverwrite);
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Open qtdrum file"), fullOpenFileName, tr("qtdum file (*.qdr)"), nullptr, QFileDialog::DontConfirmOverwrite);
 
     if(!fileName.isEmpty()) {
         QFileInfo fileInfo(fileName);
@@ -358,7 +360,7 @@ bool CMainWindow::loadFile(QString fileContent) {
             QStringList elts = line.split(": ");
 
             if(elts.size() == 2) {
-                newPads.append(SPad("", elts[0].toInt(), elts[1].toAscii()));
+                newPads.append(SPad("", static_cast<unsigned char>(elts[0].toInt()), elts[1].toLatin1()));
             }else {
                 return false;
             }
@@ -412,18 +414,18 @@ QFont CMainWindow::getFont(QString resourceName) {
 }
 
 bool CMainWindow::startPOSIXTimer(int intervalMS) {
-    long intervalNS = ((long)intervalMS) * 1000000L;
+    long intervalNS = (static_cast<long>(intervalMS)) * 1000000L;
     struct itimerspec itimer = { { 0,  intervalNS }, { 0, intervalNS } };
     struct sigevent sigev;
 
     memset (&sigev, 0, sizeof (struct sigevent));
-    sigev.sigev_value.sival_ptr = (void *)&timerParams;
+    sigev.sigev_value.sival_ptr = static_cast<void *>(&timerParams);
     sigev.sigev_notify = SIGEV_THREAD;
-    sigev.sigev_notify_attributes = NULL;
+    sigev.sigev_notify_attributes = nullptr;
     sigev.sigev_notify_function = timerHandler;
 
     if(timer_create (CLOCK_REALTIME, &sigev, &posixTimer) == 0) {
-        if(timer_settime (posixTimer, 0, &itimer, NULL) == 0) {
+        if(timer_settime (posixTimer, 0, &itimer, nullptr) == 0) {
             return true;
         }
     }

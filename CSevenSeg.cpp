@@ -59,9 +59,9 @@ void CSevenSeg::setBackgroundColor(QColor color) {
 void CSevenSeg::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
     QPolygonF a, b, c, d, e, f, g;
-    float mulX = event->rect().width() / 10.0;
-    float mulY = event->rect().height() / 18.0;
-    float mul, margeX=0, margeY=0;
+    double mulX = event->rect().width() / 10.0;
+    double mulY = event->rect().height() / 18.0;
+    double mul, margeX=0, margeY=0;
 
     if(mulX < mulY) {
         mul = mulX;

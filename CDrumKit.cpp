@@ -1,9 +1,9 @@
 #include "CDrumKit.h"
 
-static CDrumKit *instance = 0;
+static CDrumKit *instance = nullptr;
 
 CDrumKit * CDrumKit::getInstance(void) {
-    if(instance == 0) {
+    if(instance == nullptr) {
         instance = new CDrumKit();
     }
 
@@ -16,7 +16,7 @@ void CDrumKit::init(int portNumber) {
     if(midiOut->isPortOpen()) {
         midiOut->closePort();
     }
-    midiOut->openPort(portNumber);
+    midiOut->openPort(static_cast<unsigned>(portNumber));
 
     message.push_back(192);
     message.push_back(5);
@@ -32,17 +32,17 @@ void CDrumKit::playNote(char note) {
     std::vector<unsigned char> message;
 
     message.push_back(153);
-    message.push_back(note);
+    message.push_back(static_cast<unsigned char>(note));
     message.push_back(127);
     midiOut->sendMessage(&message);
 }
 
 QStringList CDrumKit::getMidiPorts(void) {
     QStringList list;
-    int portCount = midiOut->getPortCount();
+    int portCount = static_cast<int>(midiOut->getPortCount());
 
     for(int i=0;i<portCount;i++) {
-        list << QString::fromStdString(midiOut->getPortName(i));
+        list << QString::fromStdString(midiOut->getPortName(static_cast<unsigned>(i)));
     }
 
     return list;

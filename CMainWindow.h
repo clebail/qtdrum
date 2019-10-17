@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QSettings>
-#include <phonon/phonon>
+#include <QMediaPlayer>
 #include <time.h>
 #include <signal.h>
 #include <unistd.h>
@@ -30,7 +30,7 @@ signals:
 class CMainWindow : public QMainWindow, private Ui::CMainWindow {
     Q_OBJECT
 public:
-    explicit CMainWindow(QWidget *parent = 0);
+    explicit CMainWindow(QWidget *parent = nullptr);
     ~CMainWindow();
     virtual bool eventFilter(QObject *object, QEvent *event);
 private slots:
@@ -60,9 +60,8 @@ private:
     QString openFileName;
     QString fullOpenFileName;
     timer_t posixTimer;
-    Phonon::MediaObject *bells;
-    Phonon::AudioOutput *bellsOutput;
     QSettings *settings;
+    QMediaPlayer *mediaPlayer;
 
     void initDrumKit(void);
     void setOpenFileName(QString openFileName, QString fullOpenFileName);
