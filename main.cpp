@@ -1,18 +1,21 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <QTranslator>
+#include <QLocale>
+#include <QtDebug>
 #include "CMainWindow.h"
 
 int main(int argc, char *argv[]){
     QTranslator qtTranslator, qtDrumTranslator;
     QApplication a(argc, argv);
     CMainWindow *w;
+	QString lang = QLocale().name().split('_')[0];
     int ret;
 
-    qtTranslator.load("qt_fr", a.applicationDirPath());
+    qtTranslator.load("qt_"+lang, a.applicationDirPath());
     a.installTranslator(&qtTranslator);
 
-    qtDrumTranslator.load("qtdrum_fr", a.applicationDirPath());
+    qtDrumTranslator.load("qtdrum_"+lang, a.applicationDirPath());
     a.installTranslator(&qtDrumTranslator);
 
 
