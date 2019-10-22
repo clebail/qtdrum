@@ -22,9 +22,9 @@ public:
     QList<SPad> *pads;
     CDrumWidget *drumWidget;
 
-    void emitTempsUpdate(int value);
+    void emitTempsUpdate(int value, int temps);
 signals:
-    void tempsUpdate(int value);
+    void tempsUpdate(int value, int temps);
 };
 
 class CMainWindow : public QMainWindow, private Ui::CMainWindow {
@@ -47,7 +47,7 @@ private slots:
     void on_spTempo_valueChanged(int);
     void on_spNbBeat_valueChanged(int);
     void on_spNbDiv_valueChanged(int);
-    void onTempsUpdate(int);
+    void onTempsUpdate(int, int);
 protected:
     virtual void closeEvent(QCloseEvent *event);
 private:

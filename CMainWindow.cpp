@@ -9,7 +9,7 @@
 #include "COptionsDialog.h"
 
 #define ONE_MINUTE              (static_cast<int>(60000))
-#define ONE_SECOND              (static_cast<int>(100))
+#define ONE_SECOND              (static_cast<int>(1000))
 
 static QList<SPad> emptyList(void) {
     QList<SPad> list;
@@ -27,9 +27,8 @@ static void timerHandler(union sigval sigval) {
         bool mute = false;
         QList<QByteArray> matrices = timerParams->drumWidget->getMatrices();
 
-        timerParams->emitTempsUpdate(((timerParams->curTemps - 1) / timerParams->nbDiv) + 1);
-
         timerParams->curMeasure+=(timerParams->curTemps+1 > timerParams->nbTemps ? 1 : 0);
+        timerParams->emitTempsUpdate(((timerParams->curTemps - 1) / timerParams->nbDiv) + 1, timerParams->curTemps - 1);
 
         if(timerParams->nbMute != 0 && timerParams->nbMuteOver != 0) {
             int curMInBcl = timerParams->curMeasure % (timerParams->nbMuteOver + 1);
@@ -59,8 +58,8 @@ static void timerHandler(union sigval sigval) {
     timerParams->timerValue++;
 }
 
-void CTimerParams::emitTempsUpdate(int value) {
-    emit(tempsUpdate(value));
+void CTimerParams::emitTempsUpdate(int value, int temps) {
+    emit(tempsUpdate(value, temps));
 }
 
 CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
@@ -116,7 +115,7 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
 
     CDrumKit::getInstance()->init(cbMidiPort->currentIndex());
 
-    connect(&timerParams, SIGNAL(tempsUpdate(int)), this, SLOT(onTempsUpdate(int)));
+    connect(&timerParams, SIGNAL(tempsUpdate(int, int)), this, SLOT(onTempsUpdate(int, int)));
 
     mediaPlayer = new QMediaPlayer();
 
@@ -180,6 +179,8 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
         pbPlayPause->setIcon(QIcon(":/qtdrum/resources/images/play.png"));
 
         stopPOSIXTimer();
+
+        drumWidget->setCurTemps(-1);
     }
 }
 
@@ -307,8 +308,9 @@ void CMainWindow::on_spNbDiv_valueChanged(int value) {
     isOpenFileUnsaved = true;
 }
 
-void CMainWindow::onTempsUpdate(int value) {
+void CMainWindow::onTempsUpdate(int value, int temps) {
     ssTemps->setValue(value);
+    drumWidget->setCurTemps(temps);
 }
 
 void CMainWindow::closeEvent(QCloseEvent *event) {

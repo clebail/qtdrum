@@ -15,6 +15,7 @@ CDrumWidget::CDrumWidget(QWidget *parent) : QWidget(parent) {
     nbBeat = 4;
     nbDivPerBeat = 4;
     nbTemps = nbBeat * nbDivPerBeat;
+    curTemps = -1;
 }
 
 void CDrumWidget::addPad(SPad *pad, bool doRepaint) {
@@ -44,6 +45,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
     QRect header;
     QColor border(0x6f, 0x7f, 0x87);
     QColor backgroundTemps(0x62, 0x76, 0x7c);
+    QColor backgroundCurTemps(0xfd, 0x72, 0x72);
     QColor background(0x6f, 0x89, 0x92);
     QPen pen(border);
     int titleWidth = event->rect().width() - nbTemps * TEMPS_WIDTH;
@@ -68,7 +70,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
 
         header=QRect(x, 0, TEMPS_WIDTH, TEMPS_HEIGHT);
         painter.setPen(border);
-        painter.setBrush(onTemps ? backgroundTemps : background);
+        painter.setBrush(curTemps != -1 && i == curTemps ? backgroundCurTemps : onTemps ? backgroundTemps : background);
         painter.drawRect(header);
         painter.setPen(Qt::white);
         if(onTemps) {
@@ -167,6 +169,12 @@ void CDrumWidget::setNbDivPerBeat(int nbDivPerBeat) {
 
         repaint();
     }
+}
+
+void CDrumWidget::setCurTemps(int curTemps) {
+    this->curTemps = curTemps;
+
+    repaint();
 }
 
 void CDrumWidget::resizeMatrice(void) {

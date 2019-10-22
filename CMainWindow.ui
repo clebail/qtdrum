@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>855</width>
-    <height>583</height>
+    <width>988</width>
+    <height>687</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,13 +45,13 @@
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>32</height>
+        <height>36</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>32</height>
+        <height>36</height>
        </size>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -386,13 +386,13 @@
          <property name="minimumSize">
           <size>
            <width>20</width>
-           <height>32</height>
+           <height>36</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>20</width>
-           <height>32</height>
+           <height>36</height>
           </size>
          </property>
         </widget>
@@ -407,8 +407,14 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>102</width>
-           <height>32</height>
+           <width>110</width>
+           <height>36</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>36</height>
           </size>
          </property>
         </widget>
@@ -426,8 +432,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>855</width>
-     <height>30</height>
+     <width>988</width>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

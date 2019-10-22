@@ -28,6 +28,7 @@ public:
     void setMatriceRow(int note, const QByteArray& map);
     void setNbBeat(int nbBeat);
     void setNbDivPerBeat(int nbBeat);
+    void setCurTemps(int curTemps);
 protected:
     virtual void paintEvent(QPaintEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent * event);
@@ -35,6 +36,7 @@ private:
     QList<SPad> pads;
     QList<QByteArray> matrice;
     int nbBeat, nbDivPerBeat, nbTemps;
+    int curTemps;
 
     void resizeMatrice(void);
     void resizeMatriceRow(int row);
