@@ -32,11 +32,13 @@ public:
 protected:
     virtual void paintEvent(QPaintEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent * event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
 private:
     QList<SPad> pads;
     QList<QByteArray> matrice;
     int nbBeat, nbDivPerBeat, nbTemps;
     int curTemps;
+    int curLineOver;
 
     void resizeMatrice(void);
     void resizeMatriceRow(int row);

@@ -72,6 +72,7 @@ private:
     bool startPOSIXTimer(int intervalMS);
     void stopPOSIXTimer(void);
     void enableControls(bool enable);
+    void pause(void);
 };
 
 #endif // CMAINWINDOW_H

@@ -16,6 +16,8 @@ CDrumWidget::CDrumWidget(QWidget *parent) : QWidget(parent) {
     nbDivPerBeat = 4;
     nbTemps = nbBeat * nbDivPerBeat;
     curTemps = -1;
+    curLineOver = 0;
+    setMouseTracking(true);
 }
 
 void CDrumWidget::addPad(SPad *pad, bool doRepaint) {
@@ -45,7 +47,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
     QRect header;
     QColor border(0x6f, 0x7f, 0x87);
     QColor backgroundTemps(0x62, 0x76, 0x7c);
-    QColor backgroundCurTemps(0xfd, 0x72, 0x72);
+    QColor backgroundCurrent(0xfd, 0x72, 0x72);
     QColor background(0x6f, 0x89, 0x92);
     QPen pen(border);
     int titleWidth = event->rect().width() - nbTemps * TEMPS_WIDTH;
@@ -70,7 +72,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
 
         header=QRect(x, 0, TEMPS_WIDTH, TEMPS_HEIGHT);
         painter.setPen(border);
-        painter.setBrush(curTemps != -1 && i == curTemps ? backgroundCurTemps : onTemps ? backgroundTemps : background);
+        painter.setBrush(curTemps != -1 && i == curTemps ? backgroundCurrent : onTemps ? backgroundTemps : background);
         painter.drawRect(header);
         painter.setPen(Qt::white);
         if(onTemps) {
@@ -86,7 +88,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
 
         header=QRect(0, y, titleWidth, TEMPS_HEIGHT);
         painter.setPen(Qt::white);
-        painter.setBrush(even ? QColor(0xEF, 0xEF, 0xEF) : Qt::white);
+        painter.setBrush(i == curLineOver ? QColor(0xfa, 0xb1, 0xa0) : (even ? QColor(0xEF, 0xEF, 0xEF) : Qt::white));
         painter.drawRect(QRect(0, y, event->rect().width(), TEMPS_HEIGHT));
         painter.setPen(Qt::black);
         painter.drawText(header, pads.at(i).nom, QTextOption(Qt::AlignVCenter));
@@ -123,6 +125,17 @@ void CDrumWidget::mouseReleaseEvent(QMouseEvent *event) {
         repaint();
 
         emit(edit(pads[row], ba, col));
+    }
+}
+
+void CDrumWidget::mouseMoveEvent(QMouseEvent *event) {
+    int newLineOver = qMin(qMax((event->y() - TEMPS_HEIGHT) / TEMPS_HEIGHT, 0), pads.size() - 1);
+
+
+    if(curLineOver != newLineOver) {
+        curLineOver = newLineOver;
+
+        repaint();
     }
 }
 
