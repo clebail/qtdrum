@@ -11,8 +11,8 @@
 #define ONE_MINUTE              (static_cast<int>(60000))
 #define ONE_SECOND              (static_cast<int>(1000))
 
-static QList<SPad> emptyList(void) {
-    QList<SPad> list;
+static QList<SPad*> emptyList(void) {
+    QList<SPad*> list;
     return list;
 }
 
@@ -43,8 +43,8 @@ static void timerHandler(union sigval sigval) {
                 int tps = timerParams->curTemps - 1;
                 QByteArray map = matrices.at(i);
 
-                if(map.at(tps) == '1') {
-                    CDrumKit::getInstance()->playNote(static_cast<char>(timerParams->pads->at(i).note));
+                if(map.at(tps) == '1' && !timerParams->pads->at(i)->mute) {
+                    CDrumKit::getInstance()->playNote(static_cast<char>(timerParams->pads->at(i)->note));
                 }
             }
         }
@@ -65,26 +65,26 @@ void CTimerParams::emitTempsUpdate(int value, int temps) {
 CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     setupUi(this);
 
-    pads = emptyList()  << SPad(QString::fromUtf8("Bass Drum 2"), 35, QByteArray("1000000110000000"))
-                        << SPad(QString::fromUtf8("Bass Drum 1"), 36, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Side Stick/Rimshot"), 37, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Snare Drum 1"), 38, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Hand Clap"), 39, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Snare Drum 2"), 40, QByteArray("0000100100001000"))
-                        << SPad(QString::fromUtf8("Low Tom 2"), 41, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Closed Hi-hat"), 42, QByteArray("1010100010101000"))
-                        << SPad(QString::fromUtf8("Low Tom 1"), 43, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Pedal Hi-hat"), 44, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Mid Tom 2"), 45, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Open Hi-hat"), 46, QByteArray("0000001000000010"))
-                        << SPad(QString::fromUtf8("Mid Tom 1"), 47, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("High Tom 2"), 48, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Crash Cymbal 1"), 49, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("High Tom 1"), 50, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Ride Cymbal 1"), 51, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Splash Cymbal"), 55, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Crash Cymbal 2"), 57, QByteArray("0000000000000000"))
-                        << SPad(QString::fromUtf8("Ride Cymbal 2"), 59, QByteArray("0000000000000000"))
+    pads = emptyList()  << new SPad(QString::fromUtf8("Bass Drum 2"), 35, QByteArray("1000000110000000"))
+                        << new SPad(QString::fromUtf8("Bass Drum 1"), 36, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Side Stick/Rimshot"), 37, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Snare Drum 1"), 38, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Hand Clap"), 39, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Snare Drum 2"), 40, QByteArray("0000100100001000"))
+                        << new SPad(QString::fromUtf8("Low Tom 2"), 41, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Closed Hi-hat"), 42, QByteArray("1010100010101000"))
+                        << new  SPad(QString::fromUtf8("Low Tom 1"), 43, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Pedal Hi-hat"), 44, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Mid Tom 2"), 45, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Open Hi-hat"), 46, QByteArray("0000001000000010"))
+                        << new SPad(QString::fromUtf8("Mid Tom 1"), 47, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("High Tom 2"), 48, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Crash Cymbal 1"), 49, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("High Tom 1"), 50, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Ride Cymbal 1"), 51, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Splash Cymbal"), 55, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Crash Cymbal 2"), 57, QByteArray("0000000000000000"))
+                        << new SPad(QString::fromUtf8("Ride Cymbal 2"), 59, QByteArray("0000000000000000"))
                         ;
 
     setStyleSheet("QMainWindow { background-color: #efefef; }");
@@ -119,11 +119,21 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
 
     mediaPlayer = new QMediaPlayer();
 
+    actMute = new QAction("Mute", this);
+    connect(actMute, SIGNAL(triggered()), this, SLOT(onMute()));
+    popupMenu = new QMenu(drumWidget);
+    popupMenu->addAction(actMute);
+    currentPad2Mute = nullptr;
+
     qApp->installEventFilter(this);
 }
 
 CMainWindow::~CMainWindow() {
     settings->sync();
+
+    for(int i=0;i<pads.length();i++) {
+        delete pads.takeLast();
+    }
 
     delete mediaPlayer;
     delete settings;
@@ -205,6 +215,10 @@ void CMainWindow::on_actNewFile_triggered(bool) {
         setOpenFileName("unamed.qdr", "unamed.qdr");
 
         drumWidget->clear();
+
+        for(int i=0;i<pads.length();i++) {
+           pads.at(i)->mute = false;
+        }
     }
 }
 
@@ -229,6 +243,10 @@ void CMainWindow::on_actOpenFile_triggered(bool) {
                 }
 
                  file.close();
+
+                 for(int i=0;i<pads.length();i++) {
+                    pads.at(i)->mute = false;
+                 }
             }else {
                 QMessageBox::critical(this, tr("Error"), tr("Unable to load file"));
                 return;
@@ -303,6 +321,19 @@ void CMainWindow::onTempsUpdate(int value, int temps) {
     drumWidget->setCurTemps(temps);
 }
 
+void CMainWindow::on_drumWidget_mute(SPad *pad, const QPoint &mnuPos) {
+    currentPad2Mute = pad;
+    popupMenu->exec(mnuPos);
+}
+
+void CMainWindow::onMute(void) {
+    if(currentPad2Mute != nullptr) {
+        currentPad2Mute->mute = !currentPad2Mute->mute;
+        drumWidget->repaint();
+        currentPad2Mute = nullptr;
+    }
+}
+
 void CMainWindow::closeEvent(QCloseEvent *event) {
     if(!isOpenFileUnsaved || QMessageBox::question(this, tr("Confirmation"), tr("Current file not save, quit ?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
         event->accept();
@@ -324,7 +355,7 @@ QString CMainWindow::createFileContent(void) {
 
     fileContent += "Params: "+QString::number(spTempo->value())+","+QString::number(spNbBeat->value())+","+QString::number(spNbDiv->value())+"\n";
     for(int i=0;i<pads.size();i++) {
-        fileContent += QString::number(pads[i].note)+": "+QString(matrice[i])+"\n";
+        fileContent += QString::number(pads[i]->note)+": "+QString(matrice[i])+"\n";
     }
 
     return fileContent;

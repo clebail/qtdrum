@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QSettings>
 #include <QMediaPlayer>
+#include <QMenu>
 #include <time.h>
 #include <signal.h>
 #include <unistd.h>
@@ -19,7 +20,7 @@ public:
     int curTemps;
     int curMeasure;
     int timerValue;
-    QList<SPad> *pads;
+    QList<SPad *> *pads;
     CDrumWidget *drumWidget;
 
     void emitTempsUpdate(int value, int temps);
@@ -48,6 +49,8 @@ private slots:
     void on_spNbBeat_valueChanged(int);
     void on_spNbDiv_valueChanged(int);
     void onTempsUpdate(int, int);
+    void on_drumWidget_mute(SPad *, const QPoint &);
+    void onMute(void);
 protected:
     virtual void closeEvent(QCloseEvent *event);
 private:
@@ -55,13 +58,16 @@ private:
     QTimer *realTimeTimer;
     CTimerParams timerParams;
     int realTime;
-    QList<SPad> pads;
+    QList<SPad *> pads;
     bool isOpenFileUnsaved;
     QString openFileName;
     QString fullOpenFileName;
     timer_t posixTimer;
     QSettings *settings;
     QMediaPlayer *mediaPlayer;
+    QAction *actMute;
+    QMenu *popupMenu;
+    SPad *currentPad2Mute;
 
     void initDrumKit(void);
     void setOpenFileName(QString openFileName, QString fullOpenFileName);

@@ -17,11 +17,13 @@ CDrumWidget::CDrumWidget(QWidget *parent) : QWidget(parent) {
     nbTemps = nbBeat * nbDivPerBeat;
     curTemps = -1;
     curLineOver = 0;
+
     setMouseTracking(true);
+    setContextMenuPolicy(Qt::DefaultContextMenu);
 }
 
 void CDrumWidget::addPad(SPad *pad, bool doRepaint) {
-    pads.append(*pad);
+    pads.append(pad);
     matrice.append(QByteArray(pad->map));
 
     if(doRepaint) {
@@ -29,10 +31,10 @@ void CDrumWidget::addPad(SPad *pad, bool doRepaint) {
     }
 }
 
-void CDrumWidget::addPads(QList<SPad> *pads2Add){
+void CDrumWidget::addPads(QList<SPad *> *pads2Add){
     for(int i=0;i<pads2Add->length();i++) {
-        SPad pad = pads2Add->at(i);
-        addPad(&pad, false);
+        SPad *pad = pads2Add->at(i);
+        addPad(pad, false);
     }
 
     repaint();
@@ -52,6 +54,10 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
     QPen pen(border);
     int titleWidth = event->rect().width() - nbTemps * TEMPS_WIDTH;
     int i, x ,y;
+    QFont font = QFont(painter.font());
+    QFont muteFont = QFont(painter.font());
+
+    muteFont.setItalic(true);
 
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -91,7 +97,16 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
         painter.setBrush(i == curLineOver ? QColor(0xfa, 0xb1, 0xa0) : (even ? QColor(0xEF, 0xEF, 0xEF) : Qt::white));
         painter.drawRect(QRect(0, y, event->rect().width(), TEMPS_HEIGHT));
         painter.setPen(Qt::black);
-        painter.drawText(header, pads.at(i).nom, QTextOption(Qt::AlignVCenter));
+
+        if(pads.at(i)->mute) {
+             painter.setPen(Qt::gray);
+             painter.setFont(muteFont);
+        } else {
+            painter.setPen(Qt::black);
+            painter.setFont(font);
+        }
+
+        painter.drawText(header, pads.at(i)->nom, QTextOption(Qt::AlignVCenter));
 
         for(int j=0;j<nbTemps;j++) {
             int x = j * TEMPS_WIDTH + titleWidth;
@@ -100,7 +115,7 @@ void CDrumWidget::paintEvent(QPaintEvent *event) {
 
             header=QRect(x + TEMPS_CASE_DIFF_WIDTH, y + TEMPS_CASE_DIFF_HEIGHT, CASE_WIDTH, CASE_HEIGHT);
             painter.setPen(pen);
-            painter.setBrush(ba.at(j) == '1' ? QColor(0x2c, 0x89, 0xc9) : Qt::white);
+            painter.setBrush(ba.at(j) == '1' ? (pads.at(i)->mute ? Qt::gray : QColor(0x2c, 0x89, 0xc9)) : Qt::white);
             painter.drawRect(header);
         }
     }
@@ -124,7 +139,7 @@ void CDrumWidget::mouseReleaseEvent(QMouseEvent *event) {
 
         repaint();
 
-        emit(edit(pads[row], ba, col));
+        emit(edit(*pads[row], ba, col));
     }
 }
 
@@ -136,6 +151,18 @@ void CDrumWidget::mouseMoveEvent(QMouseEvent *event) {
         curLineOver = newLineOver;
 
         repaint();
+    }
+}
+
+void CDrumWidget::contextMenuEvent(QContextMenuEvent *event) {
+    int y = event->y();
+
+    if(y > TEMPS_HEIGHT && y < pads.length() * TEMPS_HEIGHT + TEMPS_HEIGHT + 1) {
+        int row;
+
+        row = (y - TEMPS_HEIGHT) / TEMPS_HEIGHT;
+
+        emit(mute(pads[row], event->globalPos()));
     }
 }
 
@@ -153,7 +180,7 @@ void CDrumWidget::clear(void) {
 
 void CDrumWidget::setMatriceRow(int note, const QByteArray& map) {
     for(int i=0;i<pads.size();i++) {
-        if(pads[i].note == note) {
+        if(pads[i]->note == note) {
             matrice[i] = QByteArray(map);
             resizeMatriceRow(i);
 
