@@ -10,10 +10,15 @@ public:
     explicit COptionsDialog(QWidget *parent = nullptr);
     ~COptionsDialog();
 
-    void setPlayPauseButton(int key);
+    void setPlayStopButton(int key);
     void setSpeechLanguage(QString language);
-    int getPlayPauseButton(void);
+    void setUpTempoButton(int key);
+    void setDownTempoButton(int key);
+    int getPlayStopButton(void);
     QString getSpeechLanguage(void);
+    int getUpTempoButton(void);
+    int getDownTempoButton(void);
 };
+
 
 #endif // COPTIONSDIALOG_H

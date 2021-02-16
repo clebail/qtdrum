@@ -44,5 +44,6 @@
         <file>resources/sounds/en/19.ogg</file>
         <file>resources/sounds/en/20.ogg</file>
         <file>resources/sounds/bell.ogg</file>
+        <file>resources/sounds/bell.wav</file>
     </qresource>
 </RCC>

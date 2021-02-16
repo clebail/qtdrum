@@ -4,6 +4,7 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QKeyEvent>
+#include <QSound>
 #include "CMainWindow.h"
 #include "CDrumKit.h"
 #include "COptionsDialog.h"
@@ -117,8 +118,6 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
 
     connect(&timerParams, SIGNAL(tempsUpdate(int, int)), this, SLOT(onTempsUpdate(int, int)));
 
-    mediaPlayer = new QMediaPlayer();
-
     actMute = new QAction("Mute", this);
     connect(actMute, SIGNAL(triggered()), this, SLOT(onMute()));
     popupMenu = new QMenu(drumWidget);
@@ -135,21 +134,36 @@ CMainWindow::~CMainWindow() {
         delete pads.takeLast();
     }
 
-    delete mediaPlayer;
     delete settings;
 }
 
 bool CMainWindow::eventFilter(QObject *object, QEvent *event) {
-    int key = settings->value("playPauseButton", Qt::Key_B).toInt();
+    int keyPlayStop = settings->value("playStopButton", Qt::Key_B).toInt();
+    int keyUpTempo = settings->value("upTempoButton", Qt::Key_Plus).toInt();
+    int keyDownTempo = settings->value("downTempoButton", Qt::Key_Minus).toInt();
 
     if(event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 
 
-        if(keyEvent->key() == key) {
+        if(keyEvent->key() == keyPlayStop) {
             on_pbPlayPause_clicked();
 
             return true;
+        }
+
+        if(keyEvent->key() == keyUpTempo) {
+            if(!playing && spTempo->value() <= spTempo->maximum() - 10) {
+                spTempo->setValue(spTempo->value() + 10);
+                return true;
+            }
+        }
+
+        if(keyEvent->key() == keyDownTempo) {
+            if(!playing && spTempo->value() > 10) {
+                spTempo->setValue(spTempo->value() - 10);
+                return true;
+            }
         }
     }
 
@@ -197,13 +211,7 @@ void CMainWindow::onRealTimeTimer(void) {
     min = realTime / 60;
 
     if(sec == 0 && min != 0 && cbSoundEMinute->isChecked()) {
-        if(min <= 20) {
-            mediaPlayer->setMedia(QUrl("qrc:///qtdrum/resources/sounds/"+language+QString("/")+QString::number(min)+".ogg"));
-        } else {
-            mediaPlayer->setMedia(QUrl("qrc:///qtdrum/resources/sounds/bell.ogg"));
-        }
-
-        mediaPlayer->play();
+        CDrumKit::getInstance()->playNote(39);
     }
 
     taTimer->setValues(min, sec);
@@ -287,12 +295,16 @@ void CMainWindow::on_actQuit_triggered(bool) {
 void CMainWindow::on_actOptions_triggered(bool) {
     COptionsDialog *optionsDialog = new COptionsDialog(this);
 
-    optionsDialog->setPlayPauseButton(settings->value("playPauseButton", Qt::Key_B).toInt());
+    optionsDialog->setPlayStopButton(settings->value("playStopButton", Qt::Key_B).toInt());
     optionsDialog->setSpeechLanguage(settings->value("speechLanguage", "fr").toString());
+    optionsDialog->setUpTempoButton(settings->value("upTempoButton", Qt::Key_Plus).toInt());
+    optionsDialog->setDownTempoButton(settings->value("downTempoButton", Qt::Key_Minus).toInt());
 
     if(optionsDialog->exec() == QDialog::Accepted) {
-        settings->setValue("playPauseButton", optionsDialog->getPlayPauseButton());
+        settings->setValue("playStopButton", optionsDialog->getPlayStopButton());
         settings->setValue("speechLanguage", optionsDialog->getSpeechLanguage());
+        settings->setValue("upTempoButton", optionsDialog->getUpTempoButton());
+        settings->setValue("downTempoButton", optionsDialog->getDownTempoButton());
     }
 
     delete optionsDialog;

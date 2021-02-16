@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QMediaPlayer>
 #include <QMenu>
+#include <QSound>
 #include <time.h>
 #include <signal.h>
 #include <unistd.h>
@@ -64,7 +65,6 @@ private:
     QString fullOpenFileName;
     timer_t posixTimer;
     QSettings *settings;
-    QMediaPlayer *mediaPlayer;
     QAction *actMute;
     QMenu *popupMenu;
     SPad *currentPad2Mute;
