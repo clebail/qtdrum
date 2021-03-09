@@ -73,6 +73,18 @@ void COptionsDialog::setDownTempoButton(int key) {
     cbButtonDownTempo->setCurrentIndex(-1);
 }
 
+void COptionsDialog::setResetButton(int key) {
+    for(int i=0;i<cbReset->count();i++) {
+        if(cbReset->itemData(i).toInt() == key) {
+            cbReset->setCurrentIndex(i);
+
+            return;
+        }
+    }
+
+    cbReset->setCurrentIndex(-1);
+}
+
 int COptionsDialog::getPlayStopButton(void) {
     return cbButtonPlayStop->itemData(cbButtonPlayStop->currentIndex()).toInt();
 }
@@ -87,4 +99,8 @@ int COptionsDialog::getUpTempoButton(void) {
 
 int COptionsDialog::getDownTempoButton(void) {
     return cbButtonUpTempo->itemData(cbButtonUpTempo->currentIndex()).toInt();
+}
+
+int COptionsDialog::getResetButton(void) {
+    return cbReset->itemData(cbReset->currentIndex()).toInt();
 }

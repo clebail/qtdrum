@@ -141,6 +141,7 @@ bool CMainWindow::eventFilter(QObject *object, QEvent *event) {
     int keyPlayStop = settings->value("playStopButton", Qt::Key_B).toInt();
     int keyUpTempo = settings->value("upTempoButton", Qt::Key_Plus).toInt();
     int keyDownTempo = settings->value("downTempoButton", Qt::Key_Minus).toInt();
+    int keyReset = settings->value("resetButton", Qt::Key_0).toInt();
 
     if(event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
@@ -165,6 +166,14 @@ bool CMainWindow::eventFilter(QObject *object, QEvent *event) {
                 return true;
             }
         }
+
+        if(keyEvent->key() == keyReset) {
+            if(playing) {
+                pause();
+                play();
+                return true;
+            }
+        }
     }
 
     return QObject::eventFilter(object, event);
@@ -174,24 +183,7 @@ void CMainWindow::on_pbPlayPause_clicked(bool) {
     playing = !playing;
 
     if(playing) {
-        timerParams.curTemps = 1;
-        timerParams.curMeasure = 1;
-        timerParams.nbMute = spMute->value();
-        timerParams.nbMuteOver = spMuteOver->value();
-        timerParams.timerValue = 0;
-        realTime = 0;
-        timerParams.nbBeat = spNbBeat->value();
-        timerParams.nbDiv = spNbDiv->value();
-        timerParams.nbTemps = timerParams.nbBeat * timerParams.nbDiv;
-        timerParams.pads = &pads;
-
-        enableControls(false);
-
-        pbPlayPause->setIcon(QIcon(":/qtdrum/resources/images/stop.png"));
-
-        startPOSIXTimer(ONE_MINUTE / spTempo->value() / timerParams.nbDiv);
-
-        realTimeTimer->start();
+        play();
     }else {
         pause();
     }
@@ -299,12 +291,14 @@ void CMainWindow::on_actOptions_triggered(bool) {
     optionsDialog->setSpeechLanguage(settings->value("speechLanguage", "fr").toString());
     optionsDialog->setUpTempoButton(settings->value("upTempoButton", Qt::Key_Plus).toInt());
     optionsDialog->setDownTempoButton(settings->value("downTempoButton", Qt::Key_Minus).toInt());
+    optionsDialog->setResetButton(settings->value("resetButton", Qt::Key_0).toInt());
 
     if(optionsDialog->exec() == QDialog::Accepted) {
         settings->setValue("playStopButton", optionsDialog->getPlayStopButton());
         settings->setValue("speechLanguage", optionsDialog->getSpeechLanguage());
         settings->setValue("upTempoButton", optionsDialog->getUpTempoButton());
         settings->setValue("downTempoButton", optionsDialog->getDownTempoButton());
+        settings->setValue("resetButton", optionsDialog->getResetButton());
     }
 
     delete optionsDialog;
@@ -494,3 +488,26 @@ void CMainWindow::pause(void) {
 
     drumWidget->setCurTemps(-1);
 }
+
+void CMainWindow::play(void) {
+    timerParams.curTemps = 1;
+    timerParams.curMeasure = 1;
+    timerParams.nbMute = spMute->value();
+    timerParams.nbMuteOver = spMuteOver->value();
+    timerParams.timerValue = 0;
+    realTime = 0;
+    timerParams.nbBeat = spNbBeat->value();
+    timerParams.nbDiv = spNbDiv->value();
+    timerParams.nbTemps = timerParams.nbBeat * timerParams.nbDiv;
+    timerParams.pads = &pads;
+
+    enableControls(false);
+
+    pbPlayPause->setIcon(QIcon(":/qtdrum/resources/images/stop.png"));
+
+    startPOSIXTimer(ONE_MINUTE / spTempo->value() / timerParams.nbDiv);
+
+    realTimeTimer->start();
+}
+
+

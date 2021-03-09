@@ -79,6 +79,7 @@ private:
     void stopPOSIXTimer(void);
     void enableControls(bool enable);
     void pause(void);
+    void play(void);
 };
 
 #endif // CMAINWINDOW_H

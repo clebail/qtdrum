@@ -14,10 +14,12 @@ public:
     void setSpeechLanguage(QString language);
     void setUpTempoButton(int key);
     void setDownTempoButton(int key);
+    void setResetButton(int key);
     int getPlayStopButton(void);
     QString getSpeechLanguage(void);
     int getUpTempoButton(void);
     int getDownTempoButton(void);
+    int getResetButton(void);
 };
 
 
