@@ -154,14 +154,14 @@ bool CMainWindow::eventFilter(QObject *object, QEvent *event) {
         }
 
         if(keyEvent->key() == keyUpTempo) {
-            if(!playing && spTempo->value() <= spTempo->maximum() - 10) {
+            if(spTempo->value() <= spTempo->maximum() - 10) {
                 spTempo->setValue(spTempo->value() + 10);
                 return true;
             }
         }
 
         if(keyEvent->key() == keyDownTempo) {
-            if(!playing && spTempo->value() > 10) {
+            if(spTempo->value() > 10) {
                 spTempo->setValue(spTempo->value() - 10);
                 return true;
             }
@@ -308,8 +308,11 @@ void CMainWindow::on_drumWidget_edit(const SPad&, const QByteArray&, int) {
     isOpenFileUnsaved = true;
 }
 
-void CMainWindow::on_spTempo_valueChanged(int) {
-    isOpenFileUnsaved = true;
+void CMainWindow::on_spTempo_valueChanged(int value) {
+    // isOpenFileUnsaved = true;
+    if(playing) {
+        setPOSIXTimerTime(ONE_MINUTE / value / timerParams.nbDiv);
+    }
 }
 
 void CMainWindow::on_spNbBeat_valueChanged(int value) {
@@ -464,9 +467,20 @@ void CMainWindow::stopPOSIXTimer(void) {
     timer_delete(posixTimer);
 }
 
+bool CMainWindow::setPOSIXTimerTime(int intervalMS) {
+    long intervalNS = (static_cast<long>(intervalMS)) * 1000000L;
+    struct itimerspec itimer = { { 0,  intervalNS }, { 0, intervalNS } };
+
+    if(timer_settime (posixTimer, 0, &itimer, nullptr) == 0) {
+        return true;
+    }
+
+    return false;
+}
+
 void CMainWindow::enableControls(bool enable) {
     cbMidiPort->setEnabled(enable);
-    spTempo->setEnabled(enable);
+    // spTempo->setEnabled(enable);
     spNbBeat->setEnabled(enable);
     spNbDiv->setEnabled(enable);
     spMute->setEnabled(enable);

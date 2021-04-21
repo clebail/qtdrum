@@ -77,6 +77,7 @@ private:
     QFont getFont(QString resourceName);
     bool startPOSIXTimer(int intervalMS);
     void stopPOSIXTimer(void);
+    bool setPOSIXTimerTime(int intervalMS);
     void enableControls(bool enable);
     void pause(void);
     void play(void);
