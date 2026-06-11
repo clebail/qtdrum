@@ -5,3 +5,5 @@ qrc_*.*
 Makefile
 *.pro.user
 qtdrum
+.qm
+.qmake.stash

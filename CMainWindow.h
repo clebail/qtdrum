@@ -65,6 +65,7 @@ private:
     QString fullOpenFileName;
     timer_t posixTimer;
     QSettings *settings;
+    QMediaPlayer *speechPlayer;
     QAction *actMute;
     QMenu *popupMenu;
     SPad *currentPad2Mute;

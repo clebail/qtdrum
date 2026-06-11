@@ -4,6 +4,7 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QKeyEvent>
+#include <QUrl>
 #include <QSound>
 #include "CMainWindow.h"
 #include "CDrumKit.h"
@@ -91,6 +92,8 @@ CMainWindow::CMainWindow(QWidget *parent) : QMainWindow(parent) {
     setStyleSheet("QMainWindow { background-color: #efefef; }");
 
     settings = new QSettings("clebail", "qtdrum");
+
+    speechPlayer = new QMediaPlayer(this);
 
     spNbBeat->setMinimum(MIN_BEAT);
     spNbBeat->setMaximum(MAX_BEAT);
@@ -202,8 +205,9 @@ void CMainWindow::onRealTimeTimer(void) {
     sec = realTime % 60;
     min = realTime / 60;
 
-    if(sec == 0 && min != 0 && cbSoundEMinute->isChecked()) {
-        CDrumKit::getInstance()->playNote(39);
+    if(sec == 0 && min != 0 && min <= 20 && cbSoundEMinute->isChecked()) {
+        speechPlayer->setMedia(QUrl(QString("qrc:/qtdrum/resources/sounds/%1/%2.ogg").arg(language).arg(min)));
+        speechPlayer->play();
     }
 
     taTimer->setValues(min, sec);

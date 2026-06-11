@@ -98,7 +98,7 @@ int COptionsDialog::getUpTempoButton(void) {
 }
 
 int COptionsDialog::getDownTempoButton(void) {
-    return cbButtonUpTempo->itemData(cbButtonUpTempo->currentIndex()).toInt();
+    return cbButtonDownTempo->itemData(cbButtonDownTempo->currentIndex()).toInt();
 }
 
 int COptionsDialog::getResetButton(void) {
